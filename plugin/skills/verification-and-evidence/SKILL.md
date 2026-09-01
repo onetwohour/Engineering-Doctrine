@@ -1,6 +1,6 @@
 ---
 name: verification-and-evidence
-description: Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence. Applies to behavioral testing and coverage; correctness, regression, behavioral-claim, and completion evidence; performance investigation, measurement, optimization, budgets, benchmarks, and claims; compiler, formatter, lint, type, sanitizer, fuzz, and static-analysis signals; or conflicts between claims or assumptions and inspected evidence.
+description: Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence. Applies to designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.
 user-invocable: false
 ---
 
@@ -12,8 +12,8 @@ Discovery cues are shorthand only. Classify the current work against each canoni
 
 ## Supporting references
 
-- [testing.md](${CLAUDE_SKILL_DIR}/testing.md) — **behavioral testing and coverage.** Canonical trigger: designing, writing, changing, running, or reviewing behavioral tests or coverage.
-- [evidence.md](${CLAUDE_SKILL_DIR}/evidence.md) — **correctness, regression, behavioral-claim, and completion evidence.** Canonical trigger: gathering or judging evidence for correctness, regressions, behavioral claims, or completion.
-- [performance.md](${CLAUDE_SKILL_DIR}/performance.md) — **performance investigation, measurement, optimization, budgets, benchmarks, and claims.** Canonical trigger: performance is investigated, optimized, measured, budgeted, benchmarked, or claimed.
-- [static-analysis.md](${CLAUDE_SKILL_DIR}/static-analysis.md) — **compiler, formatter, lint, type, sanitizer, fuzz, and static-analysis signals.** Canonical trigger: compiler diagnostics, formatters, lint, typecheck, static analysis, sanitizers, or fuzzing are relevant.
-- [disagreement.md](${CLAUDE_SKILL_DIR}/disagreement.md) — **conflicts between claims or assumptions and inspected evidence.** Canonical trigger: a material claim, requested theory, or prior assumption conflicts with inspected code, runtime behavior, tests, authoritative documentation, or measured evidence.
+- [testing.md](${CLAUDE_SKILL_DIR}/testing.md) — **designing, writing, changing, running, or reviewing tests and coverage.** Canonical trigger: designing, writing, changing, running, or reviewing behavioral tests or coverage.
+- [evidence.md](${CLAUDE_SKILL_DIR}/evidence.md) — **gathering or judging evidence that the change is correct and introduced no regression.** Canonical trigger: gathering or judging evidence for correctness, regressions, behavioral claims, or completion.
+- [performance.md](${CLAUDE_SKILL_DIR}/performance.md) — **investigating, measuring, optimizing, benchmarking, or claiming anything about performance.** Canonical trigger: performance is investigated, optimized, measured, budgeted, benchmarked, or claimed.
+- [static-analysis.md](${CLAUDE_SKILL_DIR}/static-analysis.md) — **compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings.** Canonical trigger: compiler diagnostics, formatters, lint, typecheck, static analysis, sanitizers, or fuzzing are relevant.
+- [disagreement.md](${CLAUDE_SKILL_DIR}/disagreement.md) — **what the code, tests, or measurements show contradicts a claim, request, or prior assumption.** Canonical trigger: a material claim, requested theory, or prior assumption conflicts with inspected code, runtime behavior, tests, authoritative documentation, or measured evidence.

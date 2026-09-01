@@ -1,6 +1,6 @@
 ---
 name: comments-and-documentation
-description: "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth. Applies to source comments, docstrings, and API documentation comments or permanent and generated documentation."
+description: "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth. Applies to writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation."
 user-invocable: false
 ---
 
@@ -12,5 +12,5 @@ Discovery cues are shorthand only. Classify the current work against each canoni
 
 ## Supporting references
 
-- [comments.md](${CLAUDE_SKILL_DIR}/comments.md) — **source comments, docstrings, and API documentation comments.** Canonical trigger: source comments, docstrings, or API documentation comments are meaningfully changed or reviewed.
-- [documentation.md](${CLAUDE_SKILL_DIR}/documentation.md) — **permanent and generated documentation.** Canonical trigger: permanent or generated documentation is meaningfully changed or reviewed.
+- [comments.md](${CLAUDE_SKILL_DIR}/comments.md) — **writing, expanding, or reviewing a source comment, docstring, or API documentation comment.** Canonical trigger: source comments, docstrings, or API documentation comments are meaningfully changed or reviewed.
+- [documentation.md](${CLAUDE_SKILL_DIR}/documentation.md) — **writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation.** Canonical trigger: permanent or generated documentation is meaningfully changed or reviewed.

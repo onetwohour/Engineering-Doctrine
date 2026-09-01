@@ -17,163 +17,167 @@ Within authority delegated by the owner and execution environment, this document
   "stages": {
     "understand": {
       "when": "establishing behavior, cause, entry point, data flow, or failure path",
-      "cue": "root-cause investigation and behavior tracing"
+      "cue": "tracing a bug, failure, or unexpected behavior back to its actual cause and entry point"
     },
     "model": {
       "when": "reasoning about ownership, state, invariants, lifecycle, dependencies, boundaries, or failure semantics",
-      "cue": "ownership, state, invariant, lifecycle, boundary, and failure modeling"
+      "cue": "working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics"
     },
     "design": {
       "when": "choosing or changing domain model, ownership, abstractions, contracts, or architecture",
-      "cue": "domain-model, ownership, contract, abstraction, and architecture decisions"
+      "cue": "choosing a domain model, ownership, contract, abstraction, or architecture before writing code"
     },
     "plan": {
       "when": "sequencing implementation, migration, compatibility, dependencies, or verification",
-      "cue": "implementation, migration, compatibility, dependency, and verification sequencing"
+      "cue": "ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage"
     },
     "implement": {
       "when": "implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes",
-      "cue": "executable behavior, configuration, data-handling, and implementation changes"
+      "cue": "writing or changing executable behavior, configuration, or data handling, including small and trivial edits"
     },
     "verify": {
       "when": "gathering or judging evidence for correctness, regressions, behavioral claims, or completion",
-      "cue": "correctness, regression, behavioral-claim, and completion evidence"
+      "cue": "gathering or judging evidence that the change is correct and introduced no regression"
     },
     "review": {
       "when": "reviewing a concrete change or diff before declaring it done",
-      "cue": "concrete change and diff review"
+      "cue": "rereading the finished diff before saying the work is done"
     },
     "completion": {
       "when": "deciding or claiming that requested work is complete",
-      "cue": "completion decisions and claims"
+      "cue": "deciding whether the requested outcome actually exists yet"
     },
     "report": {
       "when": "reporting results, verification, uncertainty, or completion status",
-      "cue": "result, verification, uncertainty, and completion reporting"
+      "cue": "writing up what changed, what was verified, what is still unverified or blocked"
     }
   },
   "surfaces": {
     "boundary": {
       "when": "external input/output, files, network, config, subprocesses, serialized data, IPC, APIs, or model output crosses a boundary",
-      "cue": "external I/O and data-contract boundaries"
+      "cue": "reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output"
     },
     "dependencies": {
       "when": "dependencies, manifests, lockfiles, generated or vendored state, upgrades, removals, or migrations are touched",
-      "cue": "dependencies, manifests, lockfiles, generated state, vendoring, upgrades, and migrations"
+      "cue": "adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state"
     },
     "human-facing": {
       "when": "a product, operator, or developer-facing interface or output is directly consumed while using or operating the system, including UI, CLI, help, prompts, visible errors, and status output",
-      "cue": "UI, CLI, help, prompts, visible errors, and status output"
+      "cue": "anything a person sees while using the system: UI, CLI output, help, prompts, errors, status"
     },
     "human-language": {
       "when": "human-facing wording, errors, CLI/help text, source comments, documentation prose, reports, or other reader-facing language is changed",
-      "cue": "reader-facing wording, errors, help text, comments, documentation, and reports"
+      "cue": "wording a person will read: errors, help text, labels, reports, comments, documentation prose"
     },
     "logging": {
       "when": "failure diagnostics, operational logs, or logging behavior is changed",
-      "cue": "failure diagnostics and operational logging"
+      "cue": "log lines, failure diagnostics, severity levels, or operational observability output"
     },
     "comments": {
       "when": "source comments, docstrings, or API documentation comments are meaningfully changed or reviewed",
-      "cue": "source comments, docstrings, and API documentation comments"
+      "cue": "writing, expanding, or reviewing a source comment, docstring, or API documentation comment"
     },
     "documentation": {
       "when": "permanent or generated documentation is meaningfully changed or reviewed",
-      "cue": "permanent and generated documentation"
+      "cue": "writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation"
     },
     "version-control": {
       "when": "Git history, staging, commits, branches, stashes, resets, rebases, amendments, or force-pushes are touched",
-      "cue": "Git history, staging, branches, stashes, resets, rebases, amendments, and force-pushes"
+      "cue": "running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history"
     },
     "security-sensitive": {
       "when": "authentication, authorization, permissions, secrets, cryptography, untrusted files or paths, uploads, subprocess execution, network requests, databases, serialization or deserialization, templating, plugins or extensions, or privileged operations are touched",
-      "cue": "security-sensitive trust and execution boundaries"
+      "cue": "auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations"
     },
     "user-data": {
       "when": "user-owned, personal, sensitive, durable, uploaded, persisted, remotely stored, exported, retained, deleted, transmitted, logged, cached, or permissioned data is touched",
-      "cue": "user-owned, personal, sensitive, durable, persisted, transmitted, logged, cached, and permissioned data"
+      "cue": "user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted"
     }
   },
   "conditions": {
     "mutation": {
       "when": "mutating any persistent file, repository artifact, configuration, data, or generated output",
-      "cue": "persistent file, repository, configuration, data, and generated-output mutation"
+      "cue": "editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk"
     },
     "control-paths": {
       "when": "changing branches, flags, modes, settings, exceptions, identities, magic values, or hardcoded paths",
-      "cue": "branches, flags, modes, settings, exceptions, identities, magic values, and hardcoded paths"
+      "cue": "adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path"
     },
     "structure-change": {
       "when": "changing cohesion, component boundaries, dependency direction, or contracts",
-      "cue": "cohesion, component-boundary, dependency-direction, and contract changes"
+      "cue": "moving code between components, changing dependency direction, or widening a contract"
     },
     "refactoring": {
       "when": "deleting obsolete paths, consolidating authority, or refactoring",
-      "cue": "refactoring, authority consolidation, and obsolete-path removal"
+      "cue": "refactoring, consolidating duplicated authority, or deleting an obsolete path"
     },
     "performance": {
       "when": "performance is investigated, optimized, measured, budgeted, benchmarked, or claimed",
-      "cue": "performance investigation, measurement, optimization, budgets, benchmarks, and claims"
+      "cue": "investigating, measuring, optimizing, benchmarking, or claiming anything about performance"
     },
     "static-analysis": {
       "when": "compiler diagnostics, formatters, lint, typecheck, static analysis, sanitizers, or fuzzing are relevant",
-      "cue": "compiler, formatter, lint, type, sanitizer, fuzz, and static-analysis signals"
+      "cue": "compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings"
     },
     "cultural-design": {
       "when": "visual or interaction design, information architecture, onboarding, navigation, or cultural fit is materially changed",
-      "cue": "visual, interaction, information-architecture, onboarding, navigation, and cultural-fit design"
+      "cue": "visual or interaction design, information architecture, onboarding, navigation, or cultural fit"
     },
     "korean-language": {
       "when": "Korean human-facing text is written, edited, translated, or reviewed",
-      "cue": "Korean human-facing language"
+      "cue": "writing, editing, translating, or reviewing Korean that a person will read"
     },
     "locale": {
       "when": "locale, localization, translation, culturally specific formatting, or cross-locale behavior is touched",
-      "cue": "localization, translation, formatting, and cross-locale behavior"
+      "cue": "localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior"
     },
     "durable-state": {
       "when": "durable task state is needed before a second material stage, after re-entry or compaction, for an owner-level decision, when later work depends on earlier decisions, or when accumulated changes make intent unsafe to reconstruct from the diff alone",
-      "cue": "durable task-state decisions"
+      "cue": "deciding whether to record durable task state that must survive context loss"
     },
     "reentry": {
       "when": "returning after a break, restart, session change, context loss, uncertainty, or unexplained state",
-      "cue": "re-entry after breaks, context loss, uncertainty, or unexplained state"
+      "cue": "returning after a break, restart, or context loss, or finding changes you cannot explain"
     },
     "compaction": {
       "when": "context compaction is imminent or has occurred",
-      "cue": "context compaction"
+      "cue": "imminent or just-completed context compaction"
     },
     "run-budget": {
       "when": "the owner states limits on tokens, time, tool calls, memory, cost, or other execution resources",
-      "cue": "owner-defined execution budgets"
+      "cue": "an owner-stated limit on tokens, time, tool calls, cost, or other execution resources"
     },
     "testing": {
       "when": "designing, writing, changing, running, or reviewing behavioral tests or coverage",
-      "cue": "behavioral testing and coverage"
+      "cue": "designing, writing, changing, running, or reviewing tests and coverage"
     },
     "artifact-production": {
       "when": "creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts",
-      "cue": "authored artifact creation and material changes"
+      "cue": "creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media"
     },
     "execution-friction": {
       "when": "an attempt fails, work appears blocked, tool friction or unfamiliarity impedes progress, or the same approach is failing repeatedly",
-      "cue": "failed attempts, apparent blockers, tool friction, and repeated failure"
+      "cue": "a failed attempt, work that looks blocked, or an approach that keeps failing"
     },
     "evidence-conflict": {
       "when": "a material claim, requested theory, or prior assumption conflicts with inspected code, runtime behavior, tests, authoritative documentation, or measured evidence",
-      "cue": "conflicts between claims or assumptions and inspected evidence"
+      "cue": "what the code, tests, or measurements show contradicts a claim, request, or prior assumption"
     },
     "requirement-constraint": {
       "when": "interpreting or trading off requested capability, compatibility, performance, reliability, cost, resource, or other explicit constraints",
-      "cue": "capability, compatibility, performance, reliability, cost, and resource constraints"
+      "cue": "weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint"
     },
     "continuity-pressure": {
       "when": "a task is long or multi-stage, delegation or accumulated state makes attention management material, or context continuity itself affects safe execution",
-      "cue": "long, multi-stage, delegated, or attention-sensitive work"
+      "cue": "long or multi-stage work where delegation and accumulated state make attention management matter"
     },
     "operational-change": {
       "when": "changing behavior in a running or deployed system can produce persistent data, messages, external side effects, caches, client state, or other effects that a code revert alone may not undo",
-      "cue": "deployed changes with persistent or external side effects"
+      "cue": "changing a running or deployed system where a code revert alone would not undo the effects"
+    },
+    "new-concept": {
+      "when": "introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction",
+      "cue": "adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist"
     }
   },
   "skillCatalog": {
@@ -227,6 +231,10 @@ Within authority delegated by the owner and execution environment, this document
       "routes": [
         {
           "signal": "stage:implement",
+          "reference": null
+        },
+        {
+          "signal": "condition:new-concept",
           "reference": null
         }
       ]
@@ -649,8 +657,6 @@ Reproduce bugs before fixing them when reproduction is reasonably possible. Neve
 
 Read surrounding code before editing and follow the repository's current conventions unless they are unsafe, clearly defective, or contradicted by a more authoritative project convention. Existing code is evidence of convention, not proof of correctness; when several patterns coexist, determine which is canonical.
 
-Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.
-
 Ask: what actually happened, what should have happened, where did they diverge, which invariant failed, which component should have enforced it, why was the invalid state reachable, and what would prove the result correct.
 
 Design hypotheses may be formed while investigation is incomplete; label them provisional and use them to identify what evidence would discriminate among alternatives. Do not commit a material design decision while a discoverable unknown could materially change that decision.
@@ -899,6 +905,13 @@ Challenge the implementation against the failure dimensions that are material to
 When multiple paths can mutate the same state, identify who owns the decision and which transition wins. If a material race, failure transition, or recovery state cannot be explained, the implementation is not ready to be treated as complete.
 
 If implementation exposes evidence that invalidates the design, return to the earliest affected stage and correct the model rather than accumulating patches around the contradiction.
+
+---
+
+### 13.1 Find the existing owner before adding a concept
+<!-- doctrine-rule {"id":"design.reuse-before-adding","authority":"binding","applies":{"kind":"condition","value":"new-concept"}} -->
+
+Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.
 
 ---
 

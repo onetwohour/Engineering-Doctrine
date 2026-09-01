@@ -1,6 +1,6 @@
 ---
 name: planning
-description: Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker. Applies to capability, compatibility, performance, reliability, cost, and resource constraints or implementation, migration, compatibility, dependency, and verification sequencing.
+description: "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker. Applies to weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage."
 user-invocable: false
 ---
 
@@ -12,5 +12,5 @@ Discovery cues are shorthand only. Classify the current work against each canoni
 
 ## Supporting references
 
-- [requirements.md](${CLAUDE_SKILL_DIR}/requirements.md) — **capability, compatibility, performance, reliability, cost, and resource constraints.** Canonical trigger: interpreting or trading off requested capability, compatibility, performance, reliability, cost, resource, or other explicit constraints.
-- [plan.md](${CLAUDE_SKILL_DIR}/plan.md) — **implementation, migration, compatibility, dependency, and verification sequencing.** Canonical trigger: sequencing implementation, migration, compatibility, dependencies, or verification.
+- [requirements.md](${CLAUDE_SKILL_DIR}/requirements.md) — **weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint.** Canonical trigger: interpreting or trading off requested capability, compatibility, performance, reliability, cost, resource, or other explicit constraints.
+- [plan.md](${CLAUDE_SKILL_DIR}/plan.md) — **ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage.** Canonical trigger: sequencing implementation, migration, compatibility, dependencies, or verification.

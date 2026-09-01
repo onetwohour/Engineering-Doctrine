@@ -10,8 +10,6 @@ Reproduce bugs before fixing them when reproduction is reasonably possible. Neve
 
 Read surrounding code before editing and follow the repository's current conventions unless they are unsafe, clearly defective, or contradicted by a more authoritative project convention. Existing code is evidence of convention, not proof of correctness; when several patterns coexist, determine which is canonical.
 
-Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.
-
 Ask: what actually happened, what should have happened, where did they diverge, which invariant failed, which component should have enforced it, why was the invalid state reachable, and what would prove the result correct.
 
 Design hypotheses may be formed while investigation is incomplete; label them provisional and use them to identify what evidence would discriminate among alternatives. Do not commit a material design decision while a discoverable unknown could materially change that decision.

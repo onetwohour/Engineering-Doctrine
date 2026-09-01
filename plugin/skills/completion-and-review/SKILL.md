@@ -1,6 +1,6 @@
 ---
 name: completion-and-review
-description: Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies. Applies to concrete change and diff review; completion decisions and claims; or result, verification, uncertainty, and completion reporting.
+description: Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies. Applies to rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.
 user-invocable: false
 ---
 
@@ -12,6 +12,6 @@ Discovery cues are shorthand only. Classify the current work against each canoni
 
 ## Supporting references
 
-- [review.md](${CLAUDE_SKILL_DIR}/review.md) — **concrete change and diff review.** Canonical trigger: reviewing a concrete change or diff before declaring it done.
-- [completion.md](${CLAUDE_SKILL_DIR}/completion.md) — **completion decisions and claims.** Canonical trigger: deciding or claiming that requested work is complete.
-- [reporting.md](${CLAUDE_SKILL_DIR}/reporting.md) — **result, verification, uncertainty, and completion reporting.** Canonical trigger: reporting results, verification, uncertainty, or completion status.
+- [review.md](${CLAUDE_SKILL_DIR}/review.md) — **rereading the finished diff before saying the work is done.** Canonical trigger: reviewing a concrete change or diff before declaring it done.
+- [completion.md](${CLAUDE_SKILL_DIR}/completion.md) — **deciding whether the requested outcome actually exists yet.** Canonical trigger: deciding or claiming that requested work is complete.
+- [reporting.md](${CLAUDE_SKILL_DIR}/reporting.md) — **writing up what changed, what was verified, what is still unverified or blocked.** Canonical trigger: reporting results, verification, uncertainty, or completion status.

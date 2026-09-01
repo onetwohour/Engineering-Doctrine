@@ -1,6 +1,6 @@
 ---
 name: version-control
-description: Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority. Applies to Git history, staging, branches, stashes, resets, rebases, amendments, and force-pushes.
+description: "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority. Applies to running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history."
 user-invocable: false
 ---
 

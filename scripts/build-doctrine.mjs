@@ -55,7 +55,7 @@ function renderRules(rules,byId){return rules.map(r=>renderRule(r,byId).trimEnd(
 function entry(tax,key){const i=key.indexOf(":");if(i<1)return null;const kind=key.slice(0,i),value=key.slice(i+1),reg=tax[kind+"s"];return reg&&reg[value]||null;}
 function app(tax,key){const x=entry(tax,key);return x&&x.when;}
 function cue(tax,key){const x=entry(tax,key);return x&&x.cue;}
-function joinAlternatives(items){if(items.length===1)return items[0];if(items.length===2)return items[0]+" or "+items[1];return items.slice(0,-1).join("; ")+"; or "+items[items.length-1];}
+function joinAlternatives(items){if(items.length===1)return items[0];if(items.length===2)return items[0]+"; or "+items[1];return items.slice(0,-1).join("; ")+"; or "+items[items.length-1];}
 
 function compileDoctrine(src){
   const parsed=parseDoctrine(src),files=new Map(),governing=[],meta=[],skills=new Map(Object.entries(parsed.tax.skillCatalog).map(([name,spec])=>[name,{name,mode:spec.mode,summary:spec.discoverySummary,routes:spec.routes,signals:new Map(spec.routes.map(route=>[route.signal,{key:route.signal,ref:route.reference,rules:[]}])),rules:[]}]));

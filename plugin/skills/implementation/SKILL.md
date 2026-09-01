@@ -1,6 +1,6 @@
 ---
 name: implementation
-description: Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it. Applies to executable behavior, configuration, data-handling, and implementation changes.
+description: Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it. Applies to writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.
 user-invocable: false
 ---
 
@@ -21,5 +21,11 @@ Challenge the implementation against the failure dimensions that are material to
 When multiple paths can mutate the same state, identify who owns the decision and which transition wins. If a material race, failure transition, or recovery state cannot be explained, the implementation is not ready to be treated as complete.
 
 If implementation exposes evidence that invalidates the design, return to the earliest affected stage and correct the model rather than accumulating patches around the contradiction.
+
+---
+
+### 13.1 Find the existing owner before adding a concept
+
+Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.
 
 ---
