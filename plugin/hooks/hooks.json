@@ -1,0 +1,29 @@
+{
+  "description": "Loads one atomic Engineering Doctrine governing kernel per session or subagent start. Hooks add context only.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact|fork",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/runtime/session-start.json\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/runtime/subagent-start.json\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

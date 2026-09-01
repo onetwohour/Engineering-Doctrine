@@ -1,0 +1,25 @@
+{
+  "name": "onetwohour",
+  "owner": {
+    "name": "Onetwohour"
+  },
+  "metadata": {
+    "description": "Engineering guidance for Claude Code that focuses work on root causes, clear ownership, scoped changes, evidence, and review."
+  },
+  "plugins": [
+    {
+      "name": "engineering-doctrine",
+      "source": "./plugin",
+      "description": "Guides Claude Code to trace root causes, establish ownership and invariants, change only what the task requires, verify behavior with evidence, preserve existing work and user data, and review the result before claiming completion.",
+      "author": {
+        "name": "Onetwohour"
+      },
+      "keywords": [
+        "doctrine",
+        "engineering",
+        "review"
+      ],
+      "category": "workflow"
+    }
+  ]
+}
