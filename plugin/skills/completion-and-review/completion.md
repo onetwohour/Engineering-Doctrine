@@ -1,4 +1,4 @@
-### 26.1 Completion criteria
+### 27.1 Completion criteria
 
 Do not confuse activity with completion. The task is complete only when the requested outcome exists.
 
@@ -15,7 +15,7 @@ A coherent checkpoint is still a checkpoint. Green tests, a small diff, a sophis
 
 ---
 
-## 29. The standard
+## 30. The standard
 
 Before reporting completion, ask:
 

@@ -5,10 +5,14 @@
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
   "semanticIdentity": "stable-rule-id",
   "presentationNumbersAreIdentity": false,
-  "retiredRuleIds": [],
+  "retiredRuleIds": [
+    "continuity.model-reset"
+  ],
   "taxonomy": {
     "schemaVersion": 3,
-    "retiredRuleIds": [],
+    "retiredRuleIds": [
+      "continuity.model-reset"
+    ],
     "stages": {
       "understand": {
         "when": "establishing behavior, cause, entry point, data flow, or failure path",
@@ -1542,7 +1546,7 @@
     },
     {
       "id": "version-control.authority",
-      "presentation": null,
+      "presentation": "23",
       "title": "Version control",
       "authority": "binding",
       "applies": {
@@ -1559,7 +1563,7 @@
     },
     {
       "id": "documentation.core",
-      "presentation": "23",
+      "presentation": "24",
       "title": "Documentation",
       "authority": "binding",
       "applies": {
@@ -1578,7 +1582,7 @@
     },
     {
       "id": "documentation.cold-reader",
-      "presentation": "23.1",
+      "presentation": "24.1",
       "title": "Write for a cold reader",
       "authority": "binding",
       "applies": {
@@ -1595,7 +1599,7 @@
     },
     {
       "id": "documentation.current-truth",
-      "presentation": "23.2",
+      "presentation": "24.2",
       "title": "Describe current truth before change history",
       "authority": "binding",
       "applies": {
@@ -1612,7 +1616,7 @@
     },
     {
       "id": "documentation.task-state-transform",
-      "presentation": "23.3",
+      "presentation": "24.3",
       "title": "Transform task state; never publish it by copy",
       "authority": "binding",
       "applies": {
@@ -1629,7 +1633,7 @@
     },
     {
       "id": "documentation.durable-prose",
-      "presentation": "23.4",
+      "presentation": "24.4",
       "title": "Durable prose is legitimate when it owns real knowledge",
       "authority": "binding",
       "applies": {
@@ -1646,7 +1650,7 @@
     },
     {
       "id": "continuity.core",
-      "presentation": "24",
+      "presentation": "25",
       "title": "Context and continuity",
       "authority": "binding",
       "applies": {
@@ -1662,25 +1666,8 @@
       }
     },
     {
-      "id": "continuity.model-reset",
-      "presentation": "24.1",
-      "title": "Repeated failure is a context signal",
-      "authority": "binding",
-      "applies": {
-        "kind": "condition",
-        "value": "execution-friction"
-      },
-      "signal": "condition:execution-friction",
-      "references": [],
-      "route": {
-        "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "persistence.md"
-      }
-    },
-    {
       "id": "continuity.durable-state",
-      "presentation": "24.2",
+      "presentation": "25.1",
       "title": "Durable task state",
       "authority": "binding",
       "applies": {
@@ -1697,7 +1684,7 @@
     },
     {
       "id": "continuity.tripwires",
-      "presentation": "24.3",
+      "presentation": "25.2",
       "title": "Trip-wires",
       "authority": "binding",
       "applies": {
@@ -1714,7 +1701,7 @@
     },
     {
       "id": "continuity.reentry",
-      "presentation": "24.4",
+      "presentation": "25.3",
       "title": "Re-entry",
       "authority": "binding",
       "applies": {
@@ -1734,7 +1721,7 @@
     },
     {
       "id": "continuity.compaction",
-      "presentation": "24.5",
+      "presentation": "25.4",
       "title": "When context is compacted",
       "authority": "binding",
       "applies": {
@@ -1751,7 +1738,7 @@
     },
     {
       "id": "continuity.run-budgets",
-      "presentation": "24.6",
+      "presentation": "25.5",
       "title": "Run budgets",
       "authority": "binding",
       "applies": {
@@ -1768,7 +1755,7 @@
     },
     {
       "id": "review.gate",
-      "presentation": "25",
+      "presentation": "26",
       "title": "Review before declaring done",
       "authority": "binding",
       "applies": {
@@ -1782,7 +1769,7 @@
     },
     {
       "id": "review.full-diff",
-      "presentation": "25.1",
+      "presentation": "26.1",
       "title": "Full-diff review",
       "authority": "binding",
       "applies": {
@@ -1799,7 +1786,7 @@
     },
     {
       "id": "completion.gate",
-      "presentation": "26",
+      "presentation": "27",
       "title": "Completion",
       "authority": "binding",
       "applies": {
@@ -1813,7 +1800,7 @@
     },
     {
       "id": "completion.criteria",
-      "presentation": "26.1",
+      "presentation": "27.1",
       "title": "Completion criteria",
       "authority": "binding",
       "applies": {
@@ -1832,7 +1819,7 @@
     },
     {
       "id": "reporting.gate",
-      "presentation": "27",
+      "presentation": "28",
       "title": "Reporting",
       "authority": "binding",
       "applies": {
@@ -1846,7 +1833,7 @@
     },
     {
       "id": "reporting.completion-report",
-      "presentation": "27.1",
+      "presentation": "28.1",
       "title": "Completion report",
       "authority": "binding",
       "applies": {
@@ -1863,7 +1850,7 @@
     },
     {
       "id": "maintenance.owner-appendix",
-      "presentation": "28",
+      "presentation": "29",
       "title": "Owner appendix: mechanical enforcement and doctrine maintenance",
       "authority": "meta",
       "applies": {
@@ -1877,7 +1864,7 @@
     },
     {
       "id": "standard.final",
-      "presentation": "29",
+      "presentation": "30",
       "title": "The standard",
       "authority": "binding",
       "applies": {
@@ -1895,8 +1882,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9494,
-    "subagentRuntimeJsonChars": 9495,
+    "sessionRuntimeJsonChars": 9287,
+    "subagentRuntimeJsonChars": 9288,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -2338,7 +2325,6 @@
       "ruleIds": [
         "judgment.persistence",
         "continuity.core",
-        "continuity.model-reset",
         "continuity.durable-state",
         "continuity.tripwires",
         "continuity.reentry",
@@ -2357,8 +2343,7 @@
           "file": "persistence.md",
           "signal": "condition:execution-friction",
           "ruleIds": [
-            "judgment.persistence",
-            "continuity.model-reset"
+            "judgment.persistence"
           ]
         },
         {

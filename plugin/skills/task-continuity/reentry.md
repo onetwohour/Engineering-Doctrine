@@ -1,4 +1,4 @@
-### 24.3 Trip-wires
+### 25.2 Trip-wires
 
 You cannot feel context loss; you can notice its symptoms. **Stop mutating the system if any is true:**
 
@@ -9,7 +9,7 @@ You cannot feel context loss; you can notice its symptoms. **Stop mutating the s
 - the diff contains changes you cannot explain
 - you are about to reuse an approach that may already have been rejected
 
-### 24.4 Re-entry
+### 25.3 Re-entry
 
 When returning after context loss or uncertainty: stop writing → inspect repository status and the diff → inspect recent history when relevant → read durable task state → reconcile → resume only when current state and requirements are understood.
 

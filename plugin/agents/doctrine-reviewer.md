@@ -20,7 +20,7 @@ skills:
 
 The preloaded doctrine skills are generated routing surfaces from the same canonical authority. Before judging the change, classify the concrete diff against their stage, surface, and condition triggers. Read every supporting reference whose trigger applies. Router links use resolved ${CLAUDE_SKILL_DIR} paths so the referenced rule text is available in this isolated subagent context. If an applicable reference cannot be read, report the review as incomplete rather than silently reviewing without it.
 
-### 25.1 Full-diff review
+### 26.1 Full-diff review
 
 Reread the whole diff or equivalent changed-region evidence. Every changed file must belong to the task.
 

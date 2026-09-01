@@ -1,4 +1,4 @@
-## 24. Context and continuity
+## 25. Context and continuity
 
 Context is a limited engineering resource; quality degrades when attention fills with irrelevant detail.
 

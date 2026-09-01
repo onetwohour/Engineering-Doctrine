@@ -1,4 +1,4 @@
-## 23. Documentation
+## 24. Documentation
 
 Documentation exists to serve a reader, not to prove that work happened. Do not create or modify documentation unless the owner asks, the repository requires it, a public or interface change requires it, existing documentation would otherwise become false, or durable operational or architectural knowledge genuinely requires prose.
 
@@ -8,7 +8,7 @@ Prefer forms that remain synchronized with reality: expressive code → executab
 
 Do not duplicate authoritative code structure into prose without a maintenance reason — directory listings, function signatures, config keys, API fields, parameter tables should stay generated. Never knowingly leave documentation describing behavior that changed: update it in the same change or report that it remains stale. Do not silently delete stale documentation owned by someone else (`safety.no-silent-destruction`).
 
-### 23.1 Write for a cold reader
+### 24.1 Write for a cold reader
 
 Permanent documentation must make sense to a competent reader who opens it later with **no access to the conversation, task prompt, current diff, implementation sequence, or author's session memory**.
 
@@ -22,7 +22,7 @@ Name the actual subsystem, state, operation, version, contract, or decision. Def
 
 A document is not self-contained merely because every sentence is grammatical. The reader must be able to reconstruct the relevant model without knowing why the author happened to write it.
 
-### 23.2 Describe current truth before change history
+### 24.2 Describe current truth before change history
 
 Reference documentation — README, architecture and design descriptions, operational guides, interface documentation, maintenance notes — describes **the system that exists and the model the reader should use now**. Write the current ownership, behavior, invariant, lifecycle, command, or procedure directly.
 
@@ -42,7 +42,7 @@ History is legitimate when **history itself is the document's subject or part of
 
 Do not erase meaningful history from an ADR or migration document merely to make everything present tense. The rule is **current truth for reference documents; explicit, purpose-owned history for historical documents**.
 
-### 23.3 Transform task state; never publish it by copy
+### 24.3 Transform task state; never publish it by copy
 
 Task plans, progress notes, temporary implementation summaries, investigation logs, and durable task state are intentionally task-relative. They may contain chronology, rejected hypotheses, "next action," temporary file lists, and session-specific shorthand that is useful during execution and wrong for permanent documentation.
 
@@ -50,7 +50,7 @@ Do not copy or lightly edit those artifacts into README, architecture docs, runb
 
 If the only reason a sentence exists is "this happened during the task," it belongs in task state, commit history, a changelog/release note when release history matters, or nowhere — not in current-state documentation.
 
-### 23.4 Durable prose is legitimate when it owns real knowledge
+### 24.4 Durable prose is legitimate when it owns real knowledge
 
 Standalone prose is appropriate when it owns knowledge executable artifacts cannot adequately express: ADRs, operational runbooks, migration contracts, recovery procedures, security or compatibility rationale, externally meaningful protocol decisions. Such documentation needs a durable purpose, a clear audience, an identifiable maintenance owner or mechanism, and a reason it cannot be expressed more reliably elsewhere.
 

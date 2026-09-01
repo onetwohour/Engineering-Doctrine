@@ -10,7 +10,7 @@ Protects task ownership and repository history by staging in-scope work, preserv
 
 This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
 
-## Version control
+## 23. Version control
 
 Follow the repository's commit and branch conventions; if none exist, use concise conventional forms appropriate to the project. Do not commit unless the owner asks or the repository's established workflow requires it. Stage only changes that belong to the task.
 

@@ -1,4 +1,4 @@
-### 24.2 Durable task state
+### 25.1 Durable task state
 
 Establish durable task state when safe continuation depends on decisions, evidence, or stage status that cannot be reliably reconstructed from authoritative repository state and the active context. A second material stage is a trigger only when losing the first stage's conclusions would make the next stage unsafe or wastefully ambiguous. Also establish state after re-entry or compaction when needed, for owner-level decisions that must survive context loss, or when accumulated independent changes make intent unsafe to reconstruct from the diff alone.
 

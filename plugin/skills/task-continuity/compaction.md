@@ -1,4 +1,4 @@
-### 24.5 When context is compacted
+### 25.4 When context is compacted
 
 Do not push to the last token; the turns just before forced compaction are where damage happens. At the next stage boundary, bring the tree to a coherent state, run what verification you can, record results in task state, and state what is done and what is next.
 

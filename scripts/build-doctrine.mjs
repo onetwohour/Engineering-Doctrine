@@ -48,7 +48,7 @@ function parseDoctrine(src){
 
 function renderRuleBody(rule,byId){return cleanRuleText(rule.text).replace(/\{\{rule:([a-z][a-z0-9]*(?:[.-][a-z0-9]+)*)\}\}/g,(_m,id)=>"`"+byId.get(id).id+"`");}
 function renderRule(rule,byId){return renderRuleBody(rule,byId);}
-function renderGoverningRules(rules,byId){const index="IDs in prose order; all always; *=invariant, else binding: "+rules.map(r=>r.id+(r.authority==="invariant"?"*":"")).join(", ")+".\n\n";return index+rules.map(r=>renderRuleBody(r,byId).trimEnd()).join("\n\n")+"\n";}
+function renderGoverningRules(rules,byId){const index="Every rule below always applies. Invariants (highest tier): "+rules.filter(r=>r.authority==="invariant").map(r=>r.id).join(", ")+".\n\n";return index+rules.map(r=>renderRuleBody(r,byId).trimEnd()).join("\n\n")+"\n";}
 
 function renderRules(rules,byId){return rules.map(r=>renderRule(r,byId).trimEnd()).join("\n\n")+"\n";}
 
