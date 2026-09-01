@@ -7,6 +7,7 @@
     "name": "Onetwohour"
   },
   "repository": "https://github.com/onetwohour/Engineering-Doctrine",
+  "license": "Apache-2.0",
   "keywords": [
     "doctrine",
     "engineering",

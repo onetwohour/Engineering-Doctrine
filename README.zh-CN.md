@@ -55,3 +55,7 @@ Claude Code 会更一致地做到：
 ```bash
 claude --plugin-dir ./plugin
 ```
+
+## 许可证
+
+[Apache-2.0](LICENSE)

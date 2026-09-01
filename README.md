@@ -55,3 +55,7 @@ If you checked out this repository directly:
 ```bash
 claude --plugin-dir ./plugin
 ```
+
+## License
+
+[Apache-2.0](LICENSE)
