@@ -232,7 +232,13 @@ function initializeSubagent(input) {
   emit(payload);
 }
 
-function emitSessionContext() {
+function resetScope(input) {
+  const pointer = pointerPath(input);
+  try { fs.rmSync(pointer, { force: true }); } catch {}
+}
+
+function emitSessionContext(input) {
+  resetScope(input);
   process.stdout.write(fs.readFileSync(path.join(runtimeDir, 'session-start.json'), 'utf8'));
 }
 
@@ -255,11 +261,36 @@ function handlePreTool(input) {
   const manifest = readManifest();
   const toolName = String(input.tool_name || '');
   if (toolName === 'Skill') {
-    if (invokedSkill(input.tool_input) !== ROUTING_SKILL) return;
-    try {
-      parseRoute(normalizeArgs(input.tool_input), manifest);
-    } catch (error) {
-      deny(`Engineering Doctrine §0.1 rejected the route declaration: ${error.message}. Invoke ${ROUTING_SKILL} without arguments for the canonical signal catalog, then declare the route again.`);
+    const skill = invokedSkill(input.tool_input);
+    if (skill === ROUTING_SKILL) {
+      try {
+        parseRoute(normalizeArgs(input.tool_input), manifest);
+      } catch (error) {
+        deny(`Engineering Doctrine §0.1 rejected the route declaration: ${error.message}. Invoke ${ROUTING_SKILL} without arguments for the canonical signal catalog, then declare the route again.`);
+      }
+      return;
+    }
+    const state = snapshot(input);
+    if (!state.route) {
+      deny(`Engineering Doctrine §0.1 routing must precede other skills. Invoke ${ROUTING_SKILL} before ${skill || 'this skill'}.`);
+      return;
+    }
+    if (state.route.none) {
+      deny(`Engineering Doctrine §0.1 route 'none' is invalidated by attempted skill use (${skill || 'unknown'}). Declare a full route before continuing.`);
+      return;
+    }
+    if (state.route.diagnose) {
+      deny(`Engineering Doctrine §0.1 provisional diagnosis permits only minimal read-only diagnosis. Declare the full route before invoking ${skill || 'another skill'}.`);
+      return;
+    }
+    if (state.missingSkills.length) {
+      if (state.missingSkills.includes(skill)) return;
+      deny(`Engineering Doctrine §0.1 requires these routed skills first: ${state.missingSkills.join(', ')}. Do not invoke ${skill || 'another skill'} until the route requirements are satisfied.`);
+      return;
+    }
+    if (state.missingReferences.length) {
+      const refs = state.missingReferences.map(ref => `${ref.skill}/${ref.file} [${ref.signal}]`).join(', ');
+      deny(`Engineering Doctrine §0.1 requires these supporting references before other skills: ${refs}.`);
     }
     return;
   }
@@ -311,13 +342,13 @@ function handlePostSkill(input) {
   if (isReviewer(input)) return;
   const skill = invokedSkill(input.tool_input);
   if (!skill) return;
-  let dir = routeDir(input);
-  if (!dir) {
-    const epoch = input.prompt_id ? String(input.prompt_id) : crypto.randomUUID();
-    setCurrentEpoch(input, epoch);
-    dir = routeDir(input);
-  }
   if (skill === ROUTING_SKILL) {
+    let dir = routeDir(input);
+    if (!dir) {
+      const epoch = input.prompt_id ? String(input.prompt_id) : crypto.randomUUID();
+      setCurrentEpoch(input, epoch);
+      dir = routeDir(input);
+    }
     const manifest = readManifest();
     const parsed = parseRoute(normalizeArgs(input.tool_input), manifest);
     if (parsed.bootstrap) {
@@ -343,7 +374,8 @@ function handlePostSkill(input) {
     emit({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: formatRequirements(route) } });
     return;
   }
-  if (skill.startsWith(`${PLUGIN_NAME}:`)) mark(dir, 'skills', skill);
+  const state = snapshot(input);
+  if (state.route?.requiredSkills?.includes(skill)) mark(state.dir, 'skills', skill);
 }
 
 function handlePostRead(input) {
@@ -392,7 +424,7 @@ function selfTest() {
 
 const mode = process.argv[2];
 try {
-  if (mode === 'session-context') { try { cleanupState(); } catch {} emitSessionContext(); }
+  if (mode === 'session-context') { const input = readStdinJson(); try { cleanupState(); } catch {} emitSessionContext(input); }
   else if (mode === 'subagent-context') initializeSubagent(readStdinJson());
   else if (mode === 'prompt') initializePrompt(readStdinJson());
   else if (mode === 'pre-tool') handlePreTool(readStdinJson());
