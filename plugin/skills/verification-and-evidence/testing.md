@@ -26,6 +26,6 @@ Coverage depth scales with risk and the size of the relevant state space. A trul
 
 **"We did not think of that case" is evidence that the test model was incomplete, not a sufficient explanation for the missing test.** When a plausible missed case appears, identify which dimension, invariant, transition, interaction, or failure mode was absent from the model and strengthen the test derivation accordingly.
 
-Do not weaken or delete valid tests to get green. Prefer real implementations, in-memory substitutes, and test databases over heavy mocking when practical. If a test surfaces evidence that contradicts the model, fix the model before chasing green.
+Prefer real implementations, in-memory substitutes, and test databases over heavy mocking when practical. If a test surfaces evidence that contradicts the model, fix the model before chasing green.
 
 ---

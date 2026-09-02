@@ -943,14 +943,14 @@
       "authority": "binding",
       "applies": {
         "kind": "stage",
-        "value": "understand"
+        "value": "implement"
       },
-      "signal": "stage:understand",
+      "signal": "stage:implement",
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "understand.md"
+        "skill": "implementation",
+        "reference": null
       }
     },
     {
@@ -1907,8 +1907,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9435,
-    "subagentRuntimeJsonChars": 9416,
+    "sessionRuntimeJsonChars": 9401,
+    "subagentRuntimeJsonChars": 9382,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -1956,16 +1956,14 @@
         "design.dependency-direction",
         "design.narrow-contracts",
         "design.refactoring",
-        "design.project-native",
-        "scope.root-cause"
+        "design.project-native"
       ],
       "references": [
         {
           "file": "understand.md",
           "signal": "stage:understand",
           "ruleIds": [
-            "workflow.understand",
-            "scope.root-cause"
+            "workflow.understand"
           ]
         },
         {
@@ -2054,6 +2052,7 @@
         "condition:new-concept"
       ],
       "ruleIds": [
+        "scope.root-cause",
         "workflow.implement",
         "design.reuse-before-adding"
       ],

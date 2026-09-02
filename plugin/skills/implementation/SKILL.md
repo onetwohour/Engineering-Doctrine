@@ -10,6 +10,33 @@ Implements the chosen design while preserving established contracts, data, and b
 
 This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
 
+## 10. Scope and root cause
+
+Fix the root cause at the narrowest **correct** level. "Smallest coherent implementation" means the least unnecessary breadth that still fully delivers the requested outcome and fixes the cause — not the fewest edited lines or the smallest coherent subset. Narrow scope never licenses partial delivery.
+
+**Investigation scope, solution-search scope, and mutation scope are different.** Keep mutation no broader than causality and the requested outcome require, but investigate broadly enough to establish the cause and consider alternatives broadly enough to avoid premature fixation. "Narrow scope" does not mean "inspect only nearby code," "assume the symptom is local," or "consider only local fixes." Expand along real causal paths until the model is supported by evidence; only then contract the change. A small diff is a possible result of broad understanding, not a constraint imposed before understanding.
+
+If the cause is wrong ownership, duplicated policy, missing validation, a missing invariant, an incorrect lifecycle, or a broken general rule — fix that cause across as many files as required. Do not patch only where the symptom appears if that preserves the underlying defect.
+
+Equally: **if investigation establishes that ownership, boundaries, invariants, and the domain model are already correct and the defect is truly local, fix it locally.** Do not invent a deeper architectural cause merely because one can be imagined. Local bugs are allowed to be local.
+
+```text
+"Fix the duplicate charge on payment retry."
+Cause: retry path and webhook handler both write order.status; no owner.
+✓ Give status one owner; route both paths through it — four files.
+✗ if order.status == "paid": return    three lines that preserve the defect.
+
+"Fix the date shown as 'Jan 32' in the export."
+Cause: off-by-one in one formatter; ownership and model already correct.
+✓ Fix the line. Add the regression test.
+✗ Redesign the export pipeline the bug "reveals."
+
+```
+
+Correct scope is determined by causality — not by line count, and not by a preference for architectural change.
+
+---
+
 ## 13. Implementation
 
 Implement the chosen design faithfully. Preserve existing public APIs, stored data, formats, configuration, preferences, integrations, workflows, and user interaction patterns unless changing them is required by the task.

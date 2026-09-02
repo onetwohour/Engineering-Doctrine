@@ -417,20 +417,20 @@ Within authority delegated by the owner and execution environment, this document
 }
 -->
 
-Rule semantics are stable ID, authority, applicability, and prose; delivery metadata is non-semantic. Applicability predicates are canonical. Discovery summaries, cues, and ordering may aid routing but cannot add, narrow, or override obligations. Generated projections carry IDs, authority, and signals; packaging may change delivery only, never semantics, applicability, coverage, or order.
+Rule semantics are stable ID, authority, applicability, and prose. Applicability predicates are canonical; summaries, cues, and ordering may aid routing but cannot add, narrow, or override obligations.
 
-Workflow: **Understand → Model → Design → Plan → Implement → Verify → Review → Completion → Report**. Stages may collapse in time, not obligations. Re-route when stage, surface, or condition changes; invalidated assumptions return to the earliest affected stage.
+Workflow: **Understand → Model → Design → Plan → Implement → Verify → Review → Completion → Report**. Stages may collapse in time, not obligations. Invalidated assumptions return to the earliest affected stage.
 
 ---
 
 ### 0.1 Routing and progressive disclosure
 <!-- doctrine-rule {"id":"meta.routing","authority":"binding","applies":{"kind":"always"}} -->
 
-Before covered work—including clarification, inspection, planning, mutation, testing, review, completion, or reporting—judge the current stage and applicable surfaces/conditions; ensure matching skills and newly applicable references are in context. Descriptions are triggers, not content.
+Before covered work — including clarification, inspection, planning, mutation, testing, review, completion, or reporting — judge the current stage and every applicable surface and condition; ensure every matching skill and newly applicable reference is in context. Descriptions are triggers, not content; triviality is no exemption.
 
-Routing is the active agent’s semantic judgment, not durable state. Reassess before first substantive action and whenever evidence, tool results/failures, or the intended next action may change applicability. Do not reload doctrine solely to prove routing; load the newly applicable delta.
+Routing is the active agent’s semantic judgment. Reassess before the first substantive action and whenever stage, surface, condition, evidence, tool results or failures, or the intended next action may change applicability. Do not reload doctrine solely to prove routing; load the newly applicable delta.
 
-If applicability is unknown, do minimal read-only diagnosis, then reassess. Re-ground before mutation when safe orientation is unclear.
+If applicability is unknown, do minimal read-only diagnosis, then reassess. When it is borderline, resolve toward loading: a silent miss costs more than an extra reference. Re-ground before mutation when safe orientation is unclear.
 
 ---
 
@@ -593,7 +593,7 @@ Never trade a higher priority for a lower one.
 ## 5. Judgment and asking
 <!-- doctrine-rule {"id":"judgment.core","authority":"binding","applies":{"kind":"always"}} -->
 
-For an uncovered situation: eliminate invariant violations; apply {{rule:principle.priority-stack}}; gather reasonably accessible material evidence instead of guessing; choose the simplest coherent defensible solution; state any material assumption.
+For an uncovered situation, or when applicable binding rules genuinely conflict: eliminate invariant violations; apply {{rule:principle.priority-stack}}; gather reasonably accessible material evidence instead of guessing; choose the simplest coherent defensible solution; state any material assumption.
 
 ---
 
@@ -818,7 +818,7 @@ Reject choices justified only by phrases such as "standard architecture," "best 
 ---
 
 ## 10. Scope and root cause
-<!-- doctrine-rule {"id":"scope.root-cause","authority":"binding","applies":{"kind":"stage","value":"understand"}} -->
+<!-- doctrine-rule {"id":"scope.root-cause","authority":"binding","applies":{"kind":"stage","value":"implement"}} -->
 
 Fix the root cause at the narrowest **correct** level. "Smallest coherent implementation" means the least unnecessary breadth that still fully delivers the requested outcome and fixes the cause — not the fewest edited lines or the smallest coherent subset. Narrow scope never licenses partial delivery.
 
@@ -964,7 +964,7 @@ Coverage depth scales with risk and the size of the relevant state space. A trul
 
 **"We did not think of that case" is evidence that the test model was incomplete, not a sufficient explanation for the missing test.** When a plausible missed case appears, identify which dimension, invariant, transition, interaction, or failure mode was absent from the model and strengthen the test derivation accordingly.
 
-Do not weaken or delete valid tests to get green. Prefer real implementations, in-memory substitutes, and test databases over heavy mocking when practical. If a test surfaces evidence that contradicts the model, fix the model before chasing green.
+Prefer real implementations, in-memory substitutes, and test databases over heavy mocking when practical. If a test surfaces evidence that contradicts the model, fix the model before chasing green.
 
 ---
 
@@ -1533,7 +1533,9 @@ Do not use "unverified," "future work," "follow-up," or similar wording to disgu
 
 **Doctrine maintenance.** This document is subject to its own rules; it is not correct merely because it sounds rigorous. This repository owns canonical semantics and deterministic projection only. Behavioral conformance corpora, model-loop evaluation, plugin validation, release qualification, and other execution-level verification belong outside this repository so validation cannot become a second engineering authority. External validation should identify failures by stable semantic rule ID and may consume generated projection metadata, but it must not author or override doctrine semantics here.
 
-**Semantic compilation.** Stable semantic rule IDs, authority classes, applicability predicates, and rule prose in this canonical file define doctrine meaning. Presentation numbering is not identity. Retired semantic IDs remain tombstoned in `doctrine-applicability.retiredRuleIds`; never remove a tombstone or return a retired ID to active use. The canonical applicability registry also owns non-normative delivery metadata: discovery cues, skill names, modes, summaries, route order, and reference filenames. That metadata may help Claude discover and navigate rules but must not create, narrow, or override an engineering obligation. Compiler provenance belongs in `plugin/doctrine/projection-map.json`; do not spend execution-facing skill or agent context on generated-file markers or per-rule provenance comments. `plugin/doctrine/projection-map.json`, generated skills and references, reviewer agents, runtime payloads, and `hooks/hooks.json` are compiler outputs; do not hand-edit them. The compiler must reject duplicate or retired IDs, unknown or unrouted signals, delivery routes without active rules, skill summaries that attempt to state binding requirements, generated drift, or transport packing that drops or reorders governing rules. Chunking and file layout may change delivery mechanics only; they must never change which rule applies.
+**Semantic compilation.** Stable semantic rule IDs, authority classes, applicability predicates, and rule prose in this canonical file define doctrine meaning. Presentation numbering is not identity. Retired semantic IDs remain tombstoned in `doctrine-applicability.retiredRuleIds`; never remove a tombstone or return a retired ID to active use. The canonical applicability registry also owns non-normative delivery metadata: discovery cues, skill names, modes, summaries, route order, and reference filenames. That metadata may help Claude discover and navigate rules but must not create, narrow, or override an engineering obligation. Compiler provenance belongs in `plugin/doctrine/projection-map.json`; do not spend execution-facing skill or agent context on generated-file markers or per-rule provenance comments. `plugin/doctrine/projection-map.json`, generated skills and references, reviewer agents, runtime payloads, and `hooks/hooks.json` are compiler outputs; do not hand-edit them. The compiler must reject duplicate or retired IDs, unknown or unrouted signals, delivery routes without active rules, skill summaries that attempt to state binding requirements, generated drift, or transport packing that drops or reorders governing rules. Generated projections carry stable IDs, authority, and signals; chunking, file layout, and packaging may change delivery mechanics only, never semantics, applicability, coverage, or order.
+
+**One obligation, one owner — across signals too.** A signal routes to exactly one rule set, so an obligation that matters at several disjoint signals cannot be stated once and reach all of them. Restating it per signal is legitimate when a session may load one route without the others; letting those statements drift apart is not. Name the rule that owns the policy, keep every restatement consistent with it, and add a restatement only when it contributes a signal-specific instance rather than repeating the principle. Never merely repeat what the always tier already guarantees is in context.
 
 **Length is a budget.** Every line competes with the task for finite attention. Add a rule only when it prevents a meaningful failure not already handled more simply by a higher principle. For each rule, ask: *what concrete failure becomes possible again if this is deleted?* No answer — delete it. Already prevented by a shorter higher principle — merge it. A rule with repeated violations needs clearer wording, a sharper example, or mechanical enforcement, not stronger adjectives. The always tier has a mechanical budget: `MAX_HOOK_JSON_CHARS` caps each governing runtime payload, and the compiler fails the build rather than truncating. That cap is an owner-set attention budget; it has not been derived from a measured platform limit, so raise it only against a stated source. A new always-tier sentence should displace weaker always-tier prose rather than push the cap upward. Review this doctrine when the toolchain, enforcement, or environment changes materially, when the same correction recurs, or when a section stops changing behavior. Keep this file singular, coherent, current, and worthy of its authority.
 
