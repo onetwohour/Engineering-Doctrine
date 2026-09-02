@@ -102,10 +102,7 @@ function read(rel){const p=path.join(ROOT,...rel.split("/"));return fs.existsSyn
 function assertPackageBoundary(){
   for(const name of ROOT_RESERVED_PLUGIN_DIRS) if(fs.existsSync(path.join(ROOT,name))) throw new Error("plugin component directory must live under plugin/: "+name);
   for(const name of ROOT_RESERVED_PLUGIN_FILES) if(fs.existsSync(path.join(ROOT,name))) throw new Error("plugin component file must live under plugin/: "+name);
-  const rootMetadataDir=path.join(ROOT,".claude-plugin");
-  if(!fs.existsSync(rootMetadataDir)) throw new Error("missing repository marketplace metadata directory");
-  const rootMetadataEntries=fs.readdirSync(rootMetadataDir);
-  if(rootMetadataEntries.length!==1||rootMetadataEntries[0]!=="marketplace.json") throw new Error("repository .claude-plugin may contain only marketplace.json");
+  if(fs.existsSync(path.join(ROOT,".claude-plugin"))) throw new Error("the marketplace moved to onetwohour/claude-plugins; a second one here would collide with it under the same name");
   const pluginRoot=path.join(ROOT,"plugin");
   if(!fs.existsSync(pluginRoot)) throw new Error("missing plugin/");
   const allowedTop=new Set([".claude-plugin","skills","agents","runtime","hooks","doctrine"]);
@@ -117,13 +114,6 @@ function assertPackageBoundary(){
   const allowedManifestKeys=new Set(["$schema","name","displayName","description","author","repository","homepage","license","keywords","version"]);
   for(const key of Object.keys(manifest)) if(!allowedManifestKeys.has(key)) throw new Error("plugin manifest may not define component authority: "+key);
   if(manifest.name!=="engineering-doctrine") throw new Error("unexpected plugin name "+manifest.name);
-  const marketplace=JSON.parse(fs.readFileSync(path.join(ROOT,".claude-plugin","marketplace.json"),"utf8"));
-  if(marketplace.metadata&&Object.prototype.hasOwnProperty.call(marketplace.metadata,"pluginRoot")) throw new Error("marketplace metadata.pluginRoot may not redirect plugin authority");
-  if(!Array.isArray(marketplace.plugins)||marketplace.plugins.length!==1) throw new Error("marketplace must expose exactly one plugin");
-  const entry=marketplace.plugins[0];
-  if(entry.name!=="engineering-doctrine"||entry.source!=="./plugin") throw new Error("marketplace must point engineering-doctrine exactly at ./plugin");
-  const allowedEntryKeys=new Set(["name","source","description","author","keywords","category","version"]);
-  for(const key of Object.keys(entry)) if(!allowedEntryKeys.has(key)) throw new Error("marketplace entry may not define component authority: "+key);
 }
 function main(){assertPackageBoundary();const canonical=fs.readFileSync(path.join(ROOT,"doctrine","ENGINEERING_DOCTRINE.md"),"utf8"),runtimeSource=fs.readFileSync(path.join(ROOT,"scripts","doctrine-runtime.mjs"),"utf8"),compiled=compileDoctrine(canonical,runtimeSource),check=process.argv.includes("--check"),expected=new Set(compiled.files.keys());
 if(check){let failed=false;for(const [rel,content] of compiled.files)if(read(rel)!==content){console.error("DRIFT "+rel);failed=true;}const actual=[];for(const root of GENERATED_ROOTS)for(const child of walk(path.join(ROOT,"plugin",root)))actual.push("plugin/"+root+"/"+child);for(const rel of actual)if(!expected.has(rel)){console.error("UNEXPECTED "+rel);failed=true;}for(const rel of expected)if(!actual.includes(rel)){console.error("MISSING "+rel);failed=true;}if(failed)process.exit(1);console.log("Doctrine projections match canonical source; governing SessionStart payload "+compiled.manifest.governing.sessionRuntimeJsonChars+" chars.");return;}

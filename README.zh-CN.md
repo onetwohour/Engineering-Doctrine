@@ -7,7 +7,7 @@
 ## 安装
 
 ```bash
-claude plugin marketplace add onetwohour/Engineering-Doctrine
+claude plugin marketplace add onetwohour/claude-plugins
 claude plugin install engineering-doctrine@onetwohour
 ```
 
