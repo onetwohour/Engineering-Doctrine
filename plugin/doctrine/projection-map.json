@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "generated": true,
   "packageRoot": "plugin",
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
@@ -1907,8 +1907,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9401,
-    "subagentRuntimeJsonChars": 9382,
+    "sessionRuntimeJsonChars": 9471,
+    "subagentRuntimeJsonChars": 9452,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -2475,11 +2475,26 @@
     "classifier": "active Claude agent",
     "routeSource": "taxonomy.skillCatalog",
     "persistentRoutingState": false,
-    "blocking": false,
+    "classifies": false,
+    "blocking": {
+      "scope": "condition:mutation",
+      "tools": [
+        "Edit",
+        "Write",
+        "NotebookEdit"
+      ],
+      "requires": "engineering-doctrine:mutation-safety",
+      "evidence": "session transcript",
+      "opensWhenUnprovable": true
+    },
     "checkpoints": [
       {
         "event": "UserPromptSubmit",
         "purpose": "initial applicability judgment"
+      },
+      {
+        "event": "PreToolUse",
+        "purpose": "mechanical mutation floor"
       },
       {
         "event": "PostToolBatch",

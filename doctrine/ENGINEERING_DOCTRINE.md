@@ -428,9 +428,9 @@ Workflow: **Understand → Model → Design → Plan → Implement → Verify �
 
 Before covered work — including clarification, inspection, planning, mutation, testing, review, completion, or reporting — judge the current stage and every applicable surface and condition; ensure every matching skill and newly applicable reference is in context. Descriptions are triggers, not content; triviality is no exemption.
 
-Routing is the active agent’s semantic judgment. Reassess before the first substantive action and whenever stage, surface, condition, evidence, tool results or failures, or the intended next action may change applicability. Do not reload doctrine solely to prove routing; load the newly applicable delta.
+Routing is the active agent’s semantic judgment. Reassess before the first substantive action and whenever stage, surface, condition, evidence, tool results or failures, or the intended next action may change applicability. Load the newly applicable delta.
 
-If applicability is unknown, do minimal read-only diagnosis, then reassess. When it is borderline, resolve toward loading: a silent miss costs more than an extra reference. Re-ground before mutation when safe orientation is unclear.
+If applicability is unknown, do minimal read-only diagnosis, then reassess. When it is borderline, resolve toward loading: a silent miss costs more than an extra reference. Before mutation, load `mutation.precision`: there `condition:mutation` holds by definition, not by judgment. Being unblocked elsewhere is not evidence that nothing else applies.
 
 ---
 

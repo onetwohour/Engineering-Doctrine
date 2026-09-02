@@ -1,5 +1,5 @@
 {
-  "description": "Loads the Engineering Doctrine governing kernel and foregrounds §0.1 semantic reassessment at native decision points. Hooks add context only; they never classify, invalidate, or block.",
+  "description": "Loads the Engineering Doctrine governing kernel, foregrounds §0.1 semantic reassessment at native decision points, and holds a mechanical floor under persistent edits. Hooks never classify applicability; the only block is the mutation floor.",
   "hooks": {
     "SessionStart": [
       {
@@ -42,6 +42,22 @@
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
               "prompt"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "pre-mutation"
             ],
             "timeout": 5
           }
