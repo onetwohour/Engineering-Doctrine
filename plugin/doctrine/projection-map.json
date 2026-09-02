@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "generated": true,
   "packageRoot": "plugin",
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
@@ -1907,8 +1907,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9287,
-    "subagentRuntimeJsonChars": 9288,
+    "sessionRuntimeJsonChars": 9438,
+    "subagentRuntimeJsonChars": 9419,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -2470,11 +2470,39 @@
       "review.full-diff"
     ]
   },
+  "routing": {
+    "protocolVersion": 1,
+    "skill": "engineering-doctrine:routing",
+    "classifier": "active Claude agent",
+    "routeSource": "taxonomy.skillCatalog",
+    "stateScope": "prompt+agent",
+    "stateDirectory": "CLAUDE_PLUGIN_DATA",
+    "specialDeclarations": [
+      "diagnose",
+      "none"
+    ],
+    "gates": [
+      "UserPromptSubmit",
+      "PreToolUse",
+      "PostToolUse:Skill",
+      "PostToolUse:Read",
+      "Stop"
+    ],
+    "hardTripwires": {
+      "persistentMutation": [
+        "Edit",
+        "Write",
+        "NotebookEdit"
+      ],
+      "reviewerAgent": "stage:review"
+    }
+  },
   "hookTransport": {
-    "form": "shell",
-    "reader": "cat",
-    "quotedPluginRoot": true,
-    "runtimeDependency": "Claude Code documented hook shell"
+    "form": "exec",
+    "executable": "node",
+    "script": "runtime/doctrine-runtime.mjs",
+    "pluginRootPlaceholder": true,
+    "runtimeDependency": "Claude Code documented Node command-hook execution"
   },
   "metaRuleIds": [
     "principle.core-safeguards",

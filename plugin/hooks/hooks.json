@@ -1,5 +1,5 @@
 {
-  "description": "Loads one atomic Engineering Doctrine governing kernel per session or subagent start. Hooks add context only.",
+  "description": "Loads the Engineering Doctrine governing kernel and enforces the §0.1 route → resolve → load → proceed checkpoint.",
   "hooks": {
     "SessionStart": [
       {
@@ -7,7 +7,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/runtime/session-start.json\"",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "session-context"
+            ],
             "timeout": 5
           }
         ]
@@ -19,7 +23,87 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat \"${CLAUDE_PLUGIN_ROOT}/runtime/subagent-start.json\"",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "subagent-context"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "prompt"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "pre-tool"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "post-skill"
+            ],
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "post-read"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "stop"
+            ],
             "timeout": 5
           }
         ]
