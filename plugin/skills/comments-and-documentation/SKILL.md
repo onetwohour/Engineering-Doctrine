@@ -1,6 +1,6 @@
 ---
 name: comments-and-documentation
-description: "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth. Applies to writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation."
+description: Invoke this Doctrine skill when current work involves writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation.
 user-invocable: false
 ---
 

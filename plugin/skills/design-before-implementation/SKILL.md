@@ -1,6 +1,6 @@
 ---
 name: design-before-implementation
-description: Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture. Applies to tracing a bug, failure, or unexpected behavior back to its actual cause and entry point; working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path.
+description: Invoke this Doctrine skill when current work involves tracing a bug, failure, or unexpected behavior back to its actual cause and entry point; working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path.
 user-invocable: false
 ---
 

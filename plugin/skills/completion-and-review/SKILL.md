@@ -1,6 +1,6 @@
 ---
 name: completion-and-review
-description: Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies. Applies to rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.
+description: Invoke this Doctrine skill when current work involves rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.
 user-invocable: false
 ---
 

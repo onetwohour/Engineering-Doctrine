@@ -426,11 +426,11 @@ Workflow: **Understand → Model → Design → Plan → Implement → Verify �
 ### 0.1 Routing and progressive disclosure
 <!-- doctrine-rule {"id":"meta.routing","authority":"binding","applies":{"kind":"always"}} -->
 
-Before covered work — including clarification, inspection, planning, mutation, testing, review, completion, or reporting — classify the current stage and every applicable surface and condition, then load every matching skill and supporting reference. Skill descriptions are triggers, not content; triviality is no exemption.
+Before covered work—including clarification, inspection, planning, mutation, testing, review, completion, or reporting—judge the current stage and applicable surfaces/conditions; ensure matching skills and newly applicable references are in context. Descriptions are triggers, not content.
 
-When a routing checkpoint exists, declare the classification first and do not proceed until its requirements are loaded. The agent owns applicability; the checkpoint enforces routing order only.
+Routing is the active agent’s semantic judgment, not durable state. Reassess before first substantive action and whenever evidence, tool results/failures, or the intended next action may change applicability. Do not reload doctrine solely to prove routing; load the newly applicable delta.
 
-If applicability is unknown, do minimal read-only diagnosis, then route fully. Re-route whenever stage, surface, or condition changes; loss of safe orientation requires re-grounding before mutation.
+If applicability is unknown, do minimal read-only diagnosis, then reassess. Re-ground before mutation when safe orientation is unclear.
 
 ---
 

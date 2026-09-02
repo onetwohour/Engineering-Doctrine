@@ -1,6 +1,6 @@
 ---
 name: mutation-safety
-description: Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed. Applies to editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.
+description: Invoke this Doctrine skill when current work involves editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.
 user-invocable: false
 ---
 

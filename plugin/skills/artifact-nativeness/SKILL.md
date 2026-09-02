@@ -1,6 +1,6 @@
 ---
 name: artifact-nativeness
-description: "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults. Applies to creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media."
+description: "Invoke this Doctrine skill when current work involves creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media."
 user-invocable: false
 ---
 

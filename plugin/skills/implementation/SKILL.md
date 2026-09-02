@@ -1,6 +1,6 @@
 ---
 name: implementation
-description: Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it. Applies to writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.
+description: Invoke this Doctrine skill when current work involves writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.
 user-invocable: false
 ---
 

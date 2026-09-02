@@ -1,6 +1,6 @@
 ---
 name: planning
-description: "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker. Applies to weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage."
+description: "Invoke this Doctrine skill when current work involves weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage."
 user-invocable: false
 ---
 

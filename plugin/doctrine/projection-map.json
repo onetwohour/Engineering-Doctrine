@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "generated": true,
   "packageRoot": "plugin",
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
@@ -1907,8 +1907,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9438,
-    "subagentRuntimeJsonChars": 9419,
+    "sessionRuntimeJsonChars": 9435,
+    "subagentRuntimeJsonChars": 9416,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -1934,7 +1934,7 @@
     "design-before-implementation": {
       "mode": "router",
       "discoverySummary": "Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture.",
-      "description": "Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture. Applies to tracing a bug, failure, or unexpected behavior back to its actual cause and entry point; working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path.",
+      "description": "Invoke this Doctrine skill when current work involves tracing a bug, failure, or unexpected behavior back to its actual cause and entry point; working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path.",
       "signals": [
         "stage:understand",
         "stage:model",
@@ -2015,7 +2015,7 @@
     "planning": {
       "mode": "router",
       "discoverySummary": "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker.",
-      "description": "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker. Applies to weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage.",
+      "description": "Invoke this Doctrine skill when current work involves weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage.",
       "signals": [
         "condition:requirement-constraint",
         "stage:plan"
@@ -2048,7 +2048,7 @@
     "implementation": {
       "mode": "inline",
       "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
-      "description": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it. Applies to writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.",
+      "description": "Invoke this Doctrine skill when current work involves writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.",
       "signals": [
         "stage:implement",
         "condition:new-concept"
@@ -2062,7 +2062,7 @@
     "artifact-nativeness": {
       "mode": "inline",
       "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
-      "description": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults. Applies to creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media.",
+      "description": "Invoke this Doctrine skill when current work involves creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media.",
       "signals": [
         "condition:artifact-production"
       ],
@@ -2074,7 +2074,7 @@
     "mutation-safety": {
       "mode": "inline",
       "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
-      "description": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed. Applies to editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.",
+      "description": "Invoke this Doctrine skill when current work involves editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.",
       "signals": [
         "condition:mutation"
       ],
@@ -2086,7 +2086,7 @@
     "verification-and-evidence": {
       "mode": "router",
       "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
-      "description": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence. Applies to designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.",
+      "description": "Invoke this Doctrine skill when current work involves designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.",
       "signals": [
         "condition:testing",
         "stage:verify",
@@ -2148,7 +2148,7 @@
     "external-surface-contracts": {
       "mode": "router",
       "discoverySummary": "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity.",
-      "description": "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity. Applies to reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state.",
+      "description": "Invoke this Doctrine skill when current work involves reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state.",
       "signals": [
         "surface:boundary",
         "surface:security-sensitive",
@@ -2210,7 +2210,7 @@
     "human-facing-output": {
       "mode": "router",
       "discoverySummary": "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability.",
-      "description": "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability. Applies to anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; visual or interaction design, information architecture, onboarding, navigation, or cultural fit; wording a person will read: errors, help text, labels, reports, comments, documentation prose; writing, editing, translating, or reviewing Korean that a person will read; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; or log lines, failure diagnostics, severity levels, or operational observability output.",
+      "description": "Invoke this Doctrine skill when current work involves anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; visual or interaction design, information architecture, onboarding, navigation, or cultural fit; wording a person will read: errors, help text, labels, reports, comments, documentation prose; writing, editing, translating, or reviewing Korean that a person will read; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; or log lines, failure diagnostics, severity levels, or operational observability output.",
       "signals": [
         "surface:human-facing",
         "condition:cultural-design",
@@ -2287,7 +2287,7 @@
     "comments-and-documentation": {
       "mode": "router",
       "discoverySummary": "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth.",
-      "description": "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth. Applies to writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation.",
+      "description": "Invoke this Doctrine skill when current work involves writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation.",
       "signals": [
         "surface:comments",
         "surface:documentation"
@@ -2328,7 +2328,7 @@
     "version-control": {
       "mode": "inline",
       "discoverySummary": "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.",
-      "description": "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority. Applies to running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history.",
+      "description": "Invoke this Doctrine skill when current work involves running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history.",
       "signals": [
         "surface:version-control"
       ],
@@ -2340,7 +2340,7 @@
     "task-continuity": {
       "mode": "router",
       "discoverySummary": "Preserves safe orientation across long work, failures, context loss, compaction, and explicit run budgets while keeping the goal stable and discarded hypotheses discarded.",
-      "description": "Preserves safe orientation across long work, failures, context loss, compaction, and explicit run budgets while keeping the goal stable and discarded hypotheses discarded. Applies to long or multi-stage work where delegation and accumulated state make attention management matter; a failed attempt, work that looks blocked, or an approach that keeps failing; deciding whether to record durable task state that must survive context loss; returning after a break, restart, or context loss, or finding changes you cannot explain; imminent or just-completed context compaction; or an owner-stated limit on tokens, time, tool calls, cost, or other execution resources.",
+      "description": "Invoke this Doctrine skill when current work involves long or multi-stage work where delegation and accumulated state make attention management matter; a failed attempt, work that looks blocked, or an approach that keeps failing; deciding whether to record durable task state that must survive context loss; returning after a break, restart, or context loss, or finding changes you cannot explain; imminent or just-completed context compaction; or an owner-stated limit on tokens, time, tool calls, cost, or other execution resources.",
       "signals": [
         "condition:continuity-pressure",
         "condition:execution-friction",
@@ -2407,7 +2407,7 @@
     "completion-and-review": {
       "mode": "router",
       "discoverySummary": "Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies.",
-      "description": "Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies. Applies to rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.",
+      "description": "Invoke this Doctrine skill when current work involves rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.",
       "signals": [
         "stage:review",
         "stage:completion",
@@ -2470,31 +2470,30 @@
       "review.full-diff"
     ]
   },
-  "routing": {
+  "attention": {
     "protocolVersion": 1,
-    "skill": "engineering-doctrine:routing",
+    "role": "attention-scheduler",
     "classifier": "active Claude agent",
     "routeSource": "taxonomy.skillCatalog",
-    "stateScope": "prompt+agent",
-    "stateDirectory": "CLAUDE_PLUGIN_DATA",
-    "specialDeclarations": [
-      "diagnose",
-      "none"
+    "persistentRoutingState": false,
+    "blocking": false,
+    "checkpoints": [
+      {
+        "event": "UserPromptSubmit",
+        "purpose": "initial applicability judgment"
+      },
+      {
+        "event": "PostToolBatch",
+        "purpose": "post-evidence applicability reassessment"
+      },
+      {
+        "event": "PostToolUseFailure",
+        "purpose": "failure-evidence applicability reassessment"
+      }
     ],
-    "gates": [
-      "UserPromptSubmit",
-      "PreToolUse",
-      "PostToolUse:Skill",
-      "PostToolUse:Read",
-      "Stop"
-    ],
-    "hardTripwires": {
-      "persistentMutation": [
-        "Edit",
-        "Write",
-        "NotebookEdit"
-      ],
-      "reviewerAgent": "stage:review"
+    "compactionRecovery": {
+      "event": "SessionStart",
+      "reloadSkills": true
     }
   },
   "hookTransport": {

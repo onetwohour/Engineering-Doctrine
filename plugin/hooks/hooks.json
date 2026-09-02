@@ -1,5 +1,5 @@
 {
-  "description": "Loads the Engineering Doctrine governing kernel and enforces the §0.1 route → resolve → load → proceed checkpoint.",
+  "description": "Loads the Engineering Doctrine governing kernel and foregrounds §0.1 semantic reassessment at native decision points. Hooks add context only; they never classify, invalidate, or block.",
   "hooks": {
     "SessionStart": [
       {
@@ -48,7 +48,7 @@
         ]
       }
     ],
-    "PreToolUse": [
+    "PostToolUseFailure": [
       {
         "matcher": ".*",
         "hooks": [
@@ -57,44 +57,14 @@
             "command": "node",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "pre-tool"
+              "failure"
             ],
             "timeout": 5
           }
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "post-skill"
-            ],
-            "timeout": 5
-          }
-        ]
-      },
-      {
-        "matcher": "Read",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "post-read"
-            ],
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Stop": [
+    "PostToolBatch": [
       {
         "hooks": [
           {
@@ -102,7 +72,7 @@
             "command": "node",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "stop"
+              "batch"
             ],
             "timeout": 5
           }

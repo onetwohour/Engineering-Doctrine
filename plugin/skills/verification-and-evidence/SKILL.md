@@ -1,6 +1,6 @@
 ---
 name: verification-and-evidence
-description: Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence. Applies to designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.
+description: Invoke this Doctrine skill when current work involves designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.
 user-invocable: false
 ---
 

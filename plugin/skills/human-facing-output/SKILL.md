@@ -1,6 +1,6 @@
 ---
 name: human-facing-output
-description: "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability. Applies to anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; visual or interaction design, information architecture, onboarding, navigation, or cultural fit; wording a person will read: errors, help text, labels, reports, comments, documentation prose; writing, editing, translating, or reviewing Korean that a person will read; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; or log lines, failure diagnostics, severity levels, or operational observability output."
+description: "Invoke this Doctrine skill when current work involves anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; visual or interaction design, information architecture, onboarding, navigation, or cultural fit; wording a person will read: errors, help text, labels, reports, comments, documentation prose; writing, editing, translating, or reviewing Korean that a person will read; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; or log lines, failure diagnostics, severity levels, or operational observability output."
 user-invocable: false
 ---
 

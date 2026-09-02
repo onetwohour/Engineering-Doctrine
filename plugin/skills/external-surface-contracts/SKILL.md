@@ -1,6 +1,6 @@
 ---
 name: external-surface-contracts
-description: "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity. Applies to reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state."
+description: "Invoke this Doctrine skill when current work involves reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state."
 user-invocable: false
 ---
 
