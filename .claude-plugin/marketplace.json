@@ -4,7 +4,7 @@
     "name": "Onetwohour"
   },
   "metadata": {
-    "description": "Engineering guidance for Claude Code that focuses work on root causes, clear ownership, scoped changes, evidence, and review."
+    "description": "Plugins that make Claude Code's work checkable: engineering guidance for how the work is done, and an evidence-local knowledge compiler for what it is done from."
   },
   "plugins": [
     {
@@ -18,6 +18,26 @@
         "doctrine",
         "engineering",
         "review"
+      ],
+      "category": "workflow"
+    },
+    {
+      "name": "eck",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/onetwohour/ECK.git",
+        "path": "plugin"
+      },
+      "description": "Answers questions about a codebase with the evidence behind them, says UNKNOWN when it does not know rather than guessing, and refuses a policy-sensitive edit until the agent declares what the change rests on. Runs the `eck` binary, which is not bundled: install it from the ECK releases.",
+      "author": {
+        "name": "Onetwohour"
+      },
+      "keywords": [
+        "knowledge",
+        "provenance",
+        "evidence",
+        "grounding",
+        "verification"
       ],
       "category": "workflow"
     }
