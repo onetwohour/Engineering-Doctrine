@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "engineering-doctrine",
   "displayName": "Engineering Doctrine",
+  "version": "1.0.0",
   "description": "Guides Claude Code to trace root causes, establish ownership and invariants, change only what the task requires, verify behavior with evidence, preserve existing work and user data, and review the result before claiming completion.",
   "author": {
     "name": "Onetwohour"
