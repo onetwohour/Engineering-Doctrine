@@ -1,5 +1,5 @@
 {
-  "description": "Loads the Engineering Doctrine governing kernel, reports doctrine state (skills loaded, tools used) at native decision points, and holds a mechanical floor under persistent edits. Hooks never classify applicability; the only block is the mutation floor.",
+  "description": "Loads the Engineering Doctrine governing kernel, reports doctrine state (skills invoked, tools used, and that invocation is not presence) at native decision points, and holds a mechanical floor under persistent edits. Hooks never classify applicability; the only block is the mutation floor.",
   "hooks": {
     "SessionStart": [
       {

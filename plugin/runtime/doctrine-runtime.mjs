@@ -14,6 +14,13 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell']);
 const REPEAT_AFTER_TURNS = 12;
 const STATE_MARKER = 'doctrine-state=';
 
+// The transcript is append-only: it records that a skill was invoked, never that its text is still
+// in context. Compaction drops skill bodies and leaves those records behind, so every report built
+// from it has to say so rather than let the list be read as proof of presence.
+const PRESENCE_CAVEAT = 'That list proves invocation, not presence. Compaction discards a skill\'s text and leaves its invocation in the transcript, so a skill whose rules you cannot actually read in this context is NOT loaded, whatever this line names. Never act on a moment on the strength of this list: if its skill\'s rules are not in front of you, invoke it again first.';
+const PRESENCE_CAVEAT_SHORT = 'Invocation, not presence: a skill whose rules are not readable in this context is NOT loaded, and re-invoking it is the only way to get them back.';
+const UNREADABLE_STATE = 'The session transcript could not be read, so nothing is known here about which doctrine skills have been invoked. Assume none of them are in context and invoke this moment\'s skill before acting.';
+
 const FAILURE_CHECKPOINT = toolName => `The preceding ${toolName || 'tool'} attempt failed. Under Engineering Doctrine, failure is evidence rather than an automatic classification. Before repeating or working around it, reassess which moment the next action enters; condition:execution-friction or condition:evidence-conflict may now apply, but only if the current evidence supports them. Load newly applicable doctrine content before choosing the next approach.`;
 const MUTATION_DENIAL = (toolName, requires) => `Engineering Doctrine: ${toolName} performs a persistent mutation, so condition:mutation applies by definition rather than by judgment, and ${requires} is not in context. Invoke it with the Skill tool, together with the skill for any other moment this action enters (routing table in the doctrine kernel), then retry this edit.`;
 
@@ -101,10 +108,10 @@ function loadedSkills(records) {
   return loaded;
 }
 
-function describeState(loaded, names) {
-  const present = names.filter(name => loaded.has(name));
-  const missing = names.filter(name => !loaded.has(name));
-  return `Doctrine skills loaded this session: ${present.length ? present.join(', ') : 'none'}. Not loaded: ${missing.length ? missing.join(', ') : 'none'}.`;
+function describeState(invoked, names, caveat) {
+  const seen = names.filter(name => invoked.has(name));
+  const never = names.filter(name => !invoked.has(name));
+  return `Doctrine skills invoked at some point this session: ${seen.length ? seen.join(', ') : 'none'}. Never invoked: ${never.length ? never.join(', ') : 'none'}. ${caveat}`;
 }
 
 // The last batch report this runtime wrote, as recorded in the transcript, and how many assistant
@@ -146,7 +153,7 @@ function batchFacts(calls) {
 
 function handlePrompt(input, manifest) {
   const records = transcriptRecords(String(input.transcript_path || ''));
-  const state = records ? describeState(loadedSkills(records), manifest.names) : 'Doctrine skill state could not be read from the session transcript.';
+  const state = records ? describeState(loadedSkills(records), manifest.names, PRESENCE_CAVEAT) : UNREADABLE_STATE;
   emit('UserPromptSubmit', `${state} Before the first substantive action on this prompt, find the moment it enters in the routing table of the doctrine kernel and load that skill; a reply to the owner is covered work. ${manifest.floorTools.join(', ')} are denied until ${manifest.floorRequires} is loaded.`);
 }
 
@@ -167,15 +174,15 @@ function handleBatch(input, manifest) {
   const facts = batchFacts(calls);
   if (!facts.acted) return;
   const records = transcriptRecords(String(input.transcript_path || ''));
-  const loaded = records ? loadedSkills(records) : new Set();
-  const signature = `loaded=${manifest.names.filter(name => loaded.has(name)).join(',')};tools=${[...facts.counts.keys()].sort().join(',')};git=${facts.git.join(',')}`;
+  const invoked = records ? loadedSkills(records) : new Set();
+  const signature = `invoked=${manifest.names.filter(name => invoked.has(name)).join(',')};tools=${[...facts.counts.keys()].sort().join(',')};git=${facts.git.join(',')}`;
   if (records) {
     const last = lastBatchReport(records);
     if (last.signature === signature && last.turnsSince < REPEAT_AFTER_TURNS) return;
   }
   const tools = [...facts.counts].map(([tool, count]) => (count > 1 ? `${tool}×${count}` : tool)).join(', ');
   const git = facts.git.length ? ` Git: ${facts.git.join(', ')}.` : '';
-  const state = records ? describeState(loaded, manifest.names) : 'Doctrine skill state could not be read from the session transcript.';
+  const state = records ? describeState(invoked, manifest.names, PRESENCE_CAVEAT_SHORT) : UNREADABLE_STATE;
   emit('PostToolBatch', `Tools this batch: ${tools}.${git} ${state} If the next action enters a different moment, load its skill first; the routing table is in the doctrine kernel. [${STATE_MARKER}${signature}]`);
 }
 
