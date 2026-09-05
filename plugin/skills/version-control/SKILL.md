@@ -1,6 +1,6 @@
 ---
 name: version-control
-description: "Invoke this Doctrine skill when current work involves running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history."
+description: "Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history. Read this doctrine BEFORE running git: staging, committing, branching, or touching history."
 user-invocable: false
 ---
 
@@ -8,7 +8,9 @@ user-invocable: false
 
 Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.
 
-This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
+Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
+
+**Cue: Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history.** Canonical trigger: Git history, staging, commits, branches, stashes, resets, rebases, amendments, or force-pushes are touched.
 
 ## 23. Version control
 

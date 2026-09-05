@@ -1,26 +1,32 @@
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "generated": true,
   "packageRoot": "plugin",
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
   "semanticIdentity": "stable-rule-id",
   "presentationNumbersAreIdentity": false,
   "retiredRuleIds": [
-    "continuity.model-reset"
+    "continuity.model-reset",
+    "review.gate",
+    "completion.gate",
+    "reporting.gate"
   ],
   "taxonomy": {
-    "schemaVersion": 3,
+    "schemaVersion": 4,
     "retiredRuleIds": [
-      "continuity.model-reset"
+      "continuity.model-reset",
+      "review.gate",
+      "completion.gate",
+      "reporting.gate"
     ],
     "stages": {
       "understand": {
         "when": "establishing behavior, cause, entry point, data flow, or failure path",
-        "cue": "tracing a bug, failure, or unexpected behavior back to its actual cause and entry point"
+        "cue": "tracing a bug, failure, or unexpected behavior to its actual cause and entry point"
       },
       "model": {
         "when": "reasoning about ownership, state, invariants, lifecycle, dependencies, boundaries, or failure semantics",
-        "cue": "working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics"
+        "cue": "working out what owns which state, with its invariants, lifecycle, boundaries, and failure semantics"
       },
       "design": {
         "when": "choosing or changing domain model, ownership, abstractions, contracts, or architecture",
@@ -28,15 +34,15 @@
       },
       "plan": {
         "when": "sequencing implementation, migration, compatibility, dependencies, or verification",
-        "cue": "ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage"
+        "cue": "ordering multi-stage work: implementation stages, migration steps, compatibility, dependencies, and verification per stage"
       },
       "implement": {
         "when": "implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes",
-        "cue": "writing or changing executable behavior, configuration, or data handling, including small and trivial edits"
+        "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits"
       },
       "verify": {
         "when": "gathering or judging evidence for correctness, regressions, behavioral claims, or completion",
-        "cue": "gathering or judging evidence that the change is correct and introduced no regression"
+        "cue": "claiming a fix works, or gathering the evidence that a change is correct and introduced no regression"
       },
       "review": {
         "when": "reviewing a concrete change or diff before declaring it done",
@@ -44,11 +50,11 @@
       },
       "completion": {
         "when": "deciding or claiming that requested work is complete",
-        "cue": "deciding whether the requested outcome actually exists yet"
+        "cue": "deciding or claiming that the requested outcome actually exists"
       },
       "report": {
         "when": "reporting results, verification, uncertainty, or completion status",
-        "cue": "writing up what changed, what was verified, what is still unverified or blocked"
+        "cue": "writing the final summary or status: what changed, what was verified, what is still unverified or blocked"
       }
     },
     "surfaces": {
@@ -66,7 +72,7 @@
       },
       "human-language": {
         "when": "human-facing wording, errors, CLI/help text, source comments, documentation prose, reports, or other reader-facing language is changed",
-        "cue": "wording a person will read: errors, help text, labels, reports, comments, documentation prose"
+        "cue": "wording a person will read, including a reply to the owner: reports, errors, help text, labels, comments, documentation prose"
       },
       "logging": {
         "when": "failure diagnostics, operational logs, or logging behavior is changed",
@@ -96,7 +102,7 @@
     "conditions": {
       "mutation": {
         "when": "mutating any persistent file, repository artifact, configuration, data, or generated output",
-        "cue": "editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk"
+        "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command"
       },
       "control-paths": {
         "when": "changing branches, flags, modes, settings, exceptions, identities, magic values, or hardcoded paths",
@@ -116,7 +122,7 @@
       },
       "static-analysis": {
         "when": "compiler diagnostics, formatters, lint, typecheck, static analysis, sanitizers, or fuzzing are relevant",
-        "cue": "compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings"
+        "cue": "compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings, including any about to be ignored"
       },
       "cultural-design": {
         "when": "visual or interaction design, information architecture, onboarding, navigation, or cultural fit is materially changed",
@@ -124,7 +130,7 @@
       },
       "korean-language": {
         "when": "Korean human-facing text is written, edited, translated, or reviewed",
-        "cue": "writing, editing, translating, or reviewing Korean that a person will read"
+        "cue": "writing, editing, translating, or reviewing Korean, in a reply or in any artifact a person will read"
       },
       "locale": {
         "when": "locale, localization, translation, culturally specific formatting, or cross-locale behavior is touched",
@@ -148,7 +154,7 @@
       },
       "testing": {
         "when": "designing, writing, changing, running, or reviewing behavioral tests or coverage",
-        "cue": "designing, writing, changing, running, or reviewing tests and coverage"
+        "cue": "designing, writing, changing, running, or reviewing tests or coverage"
       },
       "artifact-production": {
         "when": "creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts",
@@ -160,7 +166,7 @@
       },
       "evidence-conflict": {
         "when": "a material claim, requested theory, or prior assumption conflicts with inspected code, runtime behavior, tests, authoritative documentation, or measured evidence",
-        "cue": "what the code, tests, or measurements show contradicts a claim, request, or prior assumption"
+        "cue": "code, tests, or measurements contradicting a claim, request, or prior assumption"
       },
       "requirement-constraint": {
         "when": "interpreting or trading off requested capability, compatibility, performance, reliability, cost, resource, or other explicit constraints",
@@ -181,235 +187,115 @@
     },
     "skillCatalog": {
       "design-before-implementation": {
-        "mode": "router",
+        "moment": "settling a cause, ownership, contract, flag, special case, move, or refactor",
         "discoverySummary": "Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture.",
         "routes": [
-          {
-            "signal": "stage:understand",
-            "reference": "understand.md"
-          },
-          {
-            "signal": "stage:model",
-            "reference": "model.md"
-          },
-          {
-            "signal": "stage:design",
-            "reference": "design-core.md"
-          },
-          {
-            "signal": "condition:control-paths",
-            "reference": "control-paths.md"
-          },
-          {
-            "signal": "condition:structure-change",
-            "reference": "structure.md"
-          },
-          {
-            "signal": "condition:refactoring",
-            "reference": "refactoring.md"
-          }
+          "stage:understand",
+          "stage:model",
+          "stage:design",
+          "condition:control-paths",
+          "condition:structure-change",
+          "condition:refactoring"
         ]
       },
       "planning": {
-        "mode": "router",
+        "moment": "ordering multi-stage work or trading a capability against a constraint",
         "discoverySummary": "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker.",
         "routes": [
-          {
-            "signal": "condition:requirement-constraint",
-            "reference": "requirements.md"
-          },
-          {
-            "signal": "stage:plan",
-            "reference": "plan.md"
-          }
-        ]
-      },
-      "implementation": {
-        "mode": "inline",
-        "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
-        "routes": [
-          {
-            "signal": "stage:implement",
-            "reference": null
-          },
-          {
-            "signal": "condition:new-concept",
-            "reference": null
-          }
-        ]
-      },
-      "artifact-nativeness": {
-        "mode": "inline",
-        "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
-        "routes": [
-          {
-            "signal": "condition:artifact-production",
-            "reference": null
-          }
+          "condition:requirement-constraint",
+          "stage:plan"
         ]
       },
       "mutation-safety": {
-        "mode": "inline",
+        "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
         "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
         "routes": [
-          {
-            "signal": "condition:mutation",
-            "reference": null
-          }
+          "condition:mutation"
         ]
       },
-      "verification-and-evidence": {
-        "mode": "router",
-        "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
+      "implementation": {
+        "moment": "writing or changing executable behavior, configuration, or data handling",
+        "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
         "routes": [
-          {
-            "signal": "condition:testing",
-            "reference": "testing.md"
-          },
-          {
-            "signal": "stage:verify",
-            "reference": "evidence.md"
-          },
-          {
-            "signal": "condition:performance",
-            "reference": "performance.md"
-          },
-          {
-            "signal": "condition:static-analysis",
-            "reference": "static-analysis.md"
-          },
-          {
-            "signal": "condition:evidence-conflict",
-            "reference": "disagreement.md"
-          }
+          "stage:implement",
+          "condition:new-concept"
+        ]
+      },
+      "artifact-nativeness": {
+        "moment": "creating or materially changing anything authored",
+        "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
+        "routes": [
+          "condition:artifact-production"
         ]
       },
       "external-surface-contracts": {
-        "mode": "router",
+        "moment": "touching external data, auth, secrets, user data, dependencies, or a live system",
         "discoverySummary": "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity.",
         "routes": [
-          {
-            "signal": "surface:boundary",
-            "reference": "boundaries.md"
-          },
-          {
-            "signal": "surface:security-sensitive",
-            "reference": "security.md"
-          },
-          {
-            "signal": "surface:user-data",
-            "reference": "user-data.md"
-          },
-          {
-            "signal": "condition:operational-change",
-            "reference": "reversal.md"
-          },
-          {
-            "signal": "surface:dependencies",
-            "reference": "dependencies.md"
-          }
+          "surface:boundary",
+          "surface:security-sensitive",
+          "surface:user-data",
+          "condition:operational-change",
+          "surface:dependencies"
+        ]
+      },
+      "verification-and-evidence": {
+        "moment": "running or writing tests, claiming a fix works, or citing any measurement",
+        "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
+        "routes": [
+          "condition:testing",
+          "stage:verify",
+          "condition:performance",
+          "condition:static-analysis",
+          "condition:evidence-conflict"
         ]
       },
       "human-facing-output": {
-        "mode": "router",
+        "moment": "writing anything a person will read, in a reply or in any artifact",
         "discoverySummary": "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability.",
         "routes": [
-          {
-            "signal": "surface:human-facing",
-            "reference": "surfaces.md"
-          },
-          {
-            "signal": "condition:cultural-design",
-            "reference": "cultural-fit.md"
-          },
-          {
-            "signal": "surface:human-language",
-            "reference": "language.md"
-          },
-          {
-            "signal": "condition:korean-language",
-            "reference": "korean.md"
-          },
-          {
-            "signal": "condition:locale",
-            "reference": "locale.md"
-          },
-          {
-            "signal": "surface:logging",
-            "reference": "logging.md"
-          }
+          "surface:human-language",
+          "condition:korean-language",
+          "surface:human-facing",
+          "condition:locale",
+          "surface:logging",
+          "condition:cultural-design"
         ]
       },
       "comments-and-documentation": {
-        "mode": "router",
+        "moment": "writing or reviewing a comment, docstring, README, runbook, or changelog",
         "discoverySummary": "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth.",
         "routes": [
-          {
-            "signal": "surface:comments",
-            "reference": "comments.md"
-          },
-          {
-            "signal": "surface:documentation",
-            "reference": "documentation.md"
-          }
+          "surface:comments",
+          "surface:documentation"
         ]
       },
       "version-control": {
-        "mode": "inline",
+        "moment": "running git: staging, committing, branching, or touching history",
         "discoverySummary": "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.",
         "routes": [
-          {
-            "signal": "surface:version-control",
-            "reference": null
-          }
+          "surface:version-control"
         ]
       },
       "task-continuity": {
-        "mode": "router",
+        "moment": "continuing long work after failure, a break, or compaction, or under a budget",
         "discoverySummary": "Preserves safe orientation across long work, failures, context loss, compaction, and explicit run budgets while keeping the goal stable and discarded hypotheses discarded.",
         "routes": [
-          {
-            "signal": "condition:continuity-pressure",
-            "reference": "core.md"
-          },
-          {
-            "signal": "condition:execution-friction",
-            "reference": "persistence.md"
-          },
-          {
-            "signal": "condition:durable-state",
-            "reference": "durable-state.md"
-          },
-          {
-            "signal": "condition:reentry",
-            "reference": "reentry.md"
-          },
-          {
-            "signal": "condition:compaction",
-            "reference": "compaction.md"
-          },
-          {
-            "signal": "condition:run-budget",
-            "reference": "budgets.md"
-          }
+          "condition:continuity-pressure",
+          "condition:execution-friction",
+          "condition:durable-state",
+          "condition:reentry",
+          "condition:compaction",
+          "condition:run-budget"
         ]
       },
       "completion-and-review": {
-        "mode": "router",
+        "moment": "saying the work is done, writing the summary, or claiming verification",
         "discoverySummary": "Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies.",
         "routes": [
-          {
-            "signal": "stage:review",
-            "reference": "review.md"
-          },
-          {
-            "signal": "stage:completion",
-            "reference": "completion.md"
-          },
-          {
-            "signal": "stage:report",
-            "reference": "reporting.md"
-          }
+          "stage:review",
+          "stage:completion",
+          "stage:report"
         ]
       }
     }
@@ -446,7 +332,7 @@
     {
       "id": "meta.routing",
       "presentation": "0.1",
-      "title": "Routing and progressive disclosure",
+      "title": "Routing",
       "authority": "binding",
       "applies": {
         "kind": "always"
@@ -614,8 +500,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "artifact-nativeness",
-        "reference": null
+        "skill": "artifact-nativeness"
       }
     },
     {
@@ -631,8 +516,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "mutation-safety",
-        "reference": null
+        "skill": "mutation-safety"
       }
     },
     {
@@ -692,8 +576,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "persistence.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -709,8 +592,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "disagreement.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -726,8 +608,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "understand.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -743,8 +624,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "model.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -760,8 +640,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -777,8 +656,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -794,8 +672,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -811,8 +688,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -828,8 +704,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -845,8 +720,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "control-paths.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -862,8 +736,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "structure.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -879,8 +752,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "structure.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -896,8 +768,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "structure.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -915,8 +786,7 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "refactoring.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -932,8 +802,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "design-before-implementation",
-        "reference": "design-core.md"
+        "skill": "design-before-implementation"
       }
     },
     {
@@ -949,8 +818,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "implementation",
-        "reference": null
+        "skill": "implementation"
       }
     },
     {
@@ -966,8 +834,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "planning",
-        "reference": "requirements.md"
+        "skill": "planning"
       }
     },
     {
@@ -983,8 +850,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "planning",
-        "reference": "requirements.md"
+        "skill": "planning"
       }
     },
     {
@@ -1000,8 +866,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "planning",
-        "reference": "requirements.md"
+        "skill": "planning"
       }
     },
     {
@@ -1017,8 +882,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "planning",
-        "reference": "plan.md"
+        "skill": "planning"
       }
     },
     {
@@ -1034,8 +898,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "implementation",
-        "reference": null
+        "skill": "implementation"
       }
     },
     {
@@ -1051,8 +914,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "implementation",
-        "reference": null
+        "skill": "implementation"
       }
     },
     {
@@ -1068,8 +930,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "boundaries.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1085,8 +946,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "testing.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1102,8 +962,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "testing.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1119,8 +978,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "evidence.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1136,8 +994,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "evidence.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1153,8 +1010,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "evidence.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1170,8 +1026,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "performance.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1187,8 +1042,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "verification-and-evidence",
-        "reference": "static-analysis.md"
+        "skill": "verification-and-evidence"
       }
     },
     {
@@ -1204,8 +1058,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "security.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1221,8 +1074,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "user-data.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1238,8 +1090,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "security.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1255,8 +1106,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "security.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1272,8 +1122,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "reversal.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1291,8 +1140,7 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "dependencies.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1308,8 +1156,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "external-surface-contracts",
-        "reference": "dependencies.md"
+        "skill": "external-surface-contracts"
       }
     },
     {
@@ -1325,8 +1172,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "surfaces.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1342,8 +1188,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "surfaces.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1359,8 +1204,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "surfaces.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1376,8 +1220,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "surfaces.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1393,8 +1236,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "surfaces.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1410,8 +1252,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "cultural-fit.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1427,8 +1268,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "language.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1444,8 +1284,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "language.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1461,8 +1300,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "language.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1478,8 +1316,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "korean.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1495,8 +1332,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "locale.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1512,8 +1348,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "human-facing-output",
-        "reference": "logging.md"
+        "skill": "human-facing-output"
       }
     },
     {
@@ -1529,8 +1364,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "comments.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1546,8 +1380,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "comments.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1565,8 +1398,7 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "comments.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1582,8 +1414,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "version-control",
-        "reference": null
+        "skill": "version-control"
       }
     },
     {
@@ -1601,8 +1432,7 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "documentation.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1618,8 +1448,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "documentation.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1635,8 +1464,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "documentation.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1652,8 +1480,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "documentation.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1669,8 +1496,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "comments-and-documentation",
-        "reference": "documentation.md"
+        "skill": "comments-and-documentation"
       }
     },
     {
@@ -1686,8 +1512,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "core.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -1703,8 +1528,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "durable-state.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -1720,8 +1544,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "reentry.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -1740,8 +1563,7 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "reentry.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -1757,8 +1579,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "compaction.md"
+        "skill": "task-continuity"
       }
     },
     {
@@ -1774,28 +1595,13 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "task-continuity",
-        "reference": "budgets.md"
-      }
-    },
-    {
-      "id": "review.gate",
-      "presentation": "26",
-      "title": "Review before declaring done",
-      "authority": "binding",
-      "applies": {
-        "kind": "always"
-      },
-      "signal": "always",
-      "references": [],
-      "route": {
-        "kind": "governing"
+        "skill": "task-continuity"
       }
     },
     {
       "id": "review.full-diff",
-      "presentation": "26.1",
-      "title": "Full-diff review",
+      "presentation": "26",
+      "title": "Review before declaring done",
       "authority": "binding",
       "applies": {
         "kind": "stage",
@@ -1805,28 +1611,13 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "completion-and-review",
-        "reference": "review.md"
-      }
-    },
-    {
-      "id": "completion.gate",
-      "presentation": "27",
-      "title": "Completion",
-      "authority": "binding",
-      "applies": {
-        "kind": "always"
-      },
-      "signal": "always",
-      "references": [],
-      "route": {
-        "kind": "governing"
+        "skill": "completion-and-review"
       }
     },
     {
       "id": "completion.criteria",
-      "presentation": "27.1",
-      "title": "Completion criteria",
+      "presentation": "27",
+      "title": "Completion",
       "authority": "binding",
       "applies": {
         "kind": "stage",
@@ -1838,28 +1629,13 @@
       ],
       "route": {
         "kind": "skill",
-        "skill": "completion-and-review",
-        "reference": "completion.md"
-      }
-    },
-    {
-      "id": "reporting.gate",
-      "presentation": "28",
-      "title": "Reporting",
-      "authority": "binding",
-      "applies": {
-        "kind": "always"
-      },
-      "signal": "always",
-      "references": [],
-      "route": {
-        "kind": "governing"
+        "skill": "completion-and-review"
       }
     },
     {
       "id": "reporting.completion-report",
-      "presentation": "28.1",
-      "title": "Completion report",
+      "presentation": "28",
+      "title": "Reporting",
       "authority": "binding",
       "applies": {
         "kind": "stage",
@@ -1869,8 +1645,7 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "completion-and-review",
-        "reference": "reporting.md"
+        "skill": "completion-and-review"
       }
     },
     {
@@ -1900,15 +1675,14 @@
       "references": [],
       "route": {
         "kind": "skill",
-        "skill": "completion-and-review",
-        "reference": "completion.md"
+        "skill": "completion-and-review"
       }
     }
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9471,
-    "subagentRuntimeJsonChars": 9452,
+    "sessionRuntimeJsonChars": 9495,
+    "subagentRuntimeJsonChars": 9476,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -1924,17 +1698,14 @@
       "authority.no-borrowed-authority",
       "principle.priority-stack",
       "judgment.core",
-      "judgment.decision-gate",
-      "review.gate",
-      "completion.gate",
-      "reporting.gate"
+      "judgment.decision-gate"
     ]
   },
   "skills": {
     "design-before-implementation": {
-      "mode": "router",
+      "moment": "settling a cause, ownership, contract, flag, special case, move, or refactor",
       "discoverySummary": "Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture.",
-      "description": "Invoke this Doctrine skill when current work involves tracing a bug, failure, or unexpected behavior back to its actual cause and entry point; working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path.",
+      "description": "Tracing a bug, failure, or unexpected behavior to its actual cause and entry point; working out what owns which state, with its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path. Read this doctrine BEFORE settling a cause, ownership, contract, flag, special case, move, or refactor.",
       "signals": [
         "stage:understand",
         "stage:model",
@@ -1957,63 +1728,12 @@
         "design.narrow-contracts",
         "design.refactoring",
         "design.project-native"
-      ],
-      "references": [
-        {
-          "file": "understand.md",
-          "signal": "stage:understand",
-          "ruleIds": [
-            "workflow.understand"
-          ]
-        },
-        {
-          "file": "model.md",
-          "signal": "stage:model",
-          "ruleIds": [
-            "workflow.model"
-          ]
-        },
-        {
-          "file": "design-core.md",
-          "signal": "stage:design",
-          "ruleIds": [
-            "design.core",
-            "design.domain-not-diagram",
-            "design.invalid-states",
-            "design.single-rule-owner",
-            "design.human-cost",
-            "design.project-native"
-          ]
-        },
-        {
-          "file": "control-paths.md",
-          "signal": "condition:control-paths",
-          "ruleIds": [
-            "design.control-paths"
-          ]
-        },
-        {
-          "file": "structure.md",
-          "signal": "condition:structure-change",
-          "ruleIds": [
-            "design.cohesion",
-            "design.dependency-direction",
-            "design.narrow-contracts"
-          ]
-        },
-        {
-          "file": "refactoring.md",
-          "signal": "condition:refactoring",
-          "ruleIds": [
-            "design.refactoring"
-          ]
-        }
       ]
     },
     "planning": {
-      "mode": "router",
+      "moment": "ordering multi-stage work or trading a capability against a constraint",
       "discoverySummary": "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker.",
-      "description": "Invoke this Doctrine skill when current work involves weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage.",
+      "description": "Weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering multi-stage work: implementation stages, migration steps, compatibility, dependencies, and verification per stage. Read this doctrine BEFORE ordering multi-stage work or trading a capability against a constraint.",
       "signals": [
         "condition:requirement-constraint",
         "stage:plan"
@@ -2023,30 +1743,23 @@
         "requirements.no-failure-as-preference",
         "requirements.conflicts",
         "workflow.plan"
+      ]
+    },
+    "mutation-safety": {
+      "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
+      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
+      "description": "Editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command. Read this doctrine BEFORE the first edit, creation, move, or deletion of a file by any tool, even one line.",
+      "signals": [
+        "condition:mutation"
       ],
-      "references": [
-        {
-          "file": "requirements.md",
-          "signal": "condition:requirement-constraint",
-          "ruleIds": [
-            "requirements.core",
-            "requirements.no-failure-as-preference",
-            "requirements.conflicts"
-          ]
-        },
-        {
-          "file": "plan.md",
-          "signal": "stage:plan",
-          "ruleIds": [
-            "workflow.plan"
-          ]
-        }
+      "ruleIds": [
+        "mutation.precision"
       ]
     },
     "implementation": {
-      "mode": "inline",
+      "moment": "writing or changing executable behavior, configuration, or data handling",
       "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
-      "description": "Invoke this Doctrine skill when current work involves writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.",
+      "description": "Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.",
       "signals": [
         "stage:implement",
         "condition:new-concept"
@@ -2055,99 +1768,23 @@
         "scope.root-cause",
         "workflow.implement",
         "design.reuse-before-adding"
-      ],
-      "references": []
+      ]
     },
     "artifact-nativeness": {
-      "mode": "inline",
+      "moment": "creating or materially changing anything authored",
       "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
-      "description": "Invoke this Doctrine skill when current work involves creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media.",
+      "description": "Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media. Read this doctrine BEFORE creating or materially changing anything authored.",
       "signals": [
         "condition:artifact-production"
       ],
       "ruleIds": [
         "artifact.nativeness"
-      ],
-      "references": []
-    },
-    "mutation-safety": {
-      "mode": "inline",
-      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
-      "description": "Invoke this Doctrine skill when current work involves editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.",
-      "signals": [
-        "condition:mutation"
-      ],
-      "ruleIds": [
-        "mutation.precision"
-      ],
-      "references": []
-    },
-    "verification-and-evidence": {
-      "mode": "router",
-      "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
-      "description": "Invoke this Doctrine skill when current work involves designing, writing, changing, running, or reviewing tests and coverage; gathering or judging evidence that the change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings; or what the code, tests, or measurements show contradicts a claim, request, or prior assumption.",
-      "signals": [
-        "condition:testing",
-        "stage:verify",
-        "condition:performance",
-        "condition:static-analysis",
-        "condition:evidence-conflict"
-      ],
-      "ruleIds": [
-        "evidence.disagreement",
-        "testing.core",
-        "testing.model-derived-space",
-        "evidence.core",
-        "evidence.hierarchy",
-        "evidence.claim-matching",
-        "evidence.performance",
-        "evidence.static-analysis"
-      ],
-      "references": [
-        {
-          "file": "testing.md",
-          "signal": "condition:testing",
-          "ruleIds": [
-            "testing.core",
-            "testing.model-derived-space"
-          ]
-        },
-        {
-          "file": "evidence.md",
-          "signal": "stage:verify",
-          "ruleIds": [
-            "evidence.core",
-            "evidence.hierarchy",
-            "evidence.claim-matching"
-          ]
-        },
-        {
-          "file": "performance.md",
-          "signal": "condition:performance",
-          "ruleIds": [
-            "evidence.performance"
-          ]
-        },
-        {
-          "file": "static-analysis.md",
-          "signal": "condition:static-analysis",
-          "ruleIds": [
-            "evidence.static-analysis"
-          ]
-        },
-        {
-          "file": "disagreement.md",
-          "signal": "condition:evidence-conflict",
-          "ruleIds": [
-            "evidence.disagreement"
-          ]
-        }
       ]
     },
     "external-surface-contracts": {
-      "mode": "router",
+      "moment": "touching external data, auth, secrets, user data, dependencies, or a live system",
       "discoverySummary": "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity.",
-      "description": "Invoke this Doctrine skill when current work involves reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state.",
+      "description": "Reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state. Read this doctrine BEFORE touching external data, auth, secrets, user data, dependencies, or a live system.",
       "signals": [
         "surface:boundary",
         "surface:security-sensitive",
@@ -2164,59 +1801,41 @@
         "security.reversal",
         "dependencies.core",
         "dependencies.generated-state"
+      ]
+    },
+    "verification-and-evidence": {
+      "moment": "running or writing tests, claiming a fix works, or citing any measurement",
+      "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
+      "description": "Designing, writing, changing, running, or reviewing tests or coverage; claiming a fix works, or gathering the evidence that a change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings, including any about to be ignored; or code, tests, or measurements contradicting a claim, request, or prior assumption. Read this doctrine BEFORE running or writing tests, claiming a fix works, or citing any measurement.",
+      "signals": [
+        "condition:testing",
+        "stage:verify",
+        "condition:performance",
+        "condition:static-analysis",
+        "condition:evidence-conflict"
       ],
-      "references": [
-        {
-          "file": "boundaries.md",
-          "signal": "surface:boundary",
-          "ruleIds": [
-            "boundary.contracts"
-          ]
-        },
-        {
-          "file": "security.md",
-          "signal": "surface:security-sensitive",
-          "ruleIds": [
-            "security.core",
-            "security.sensitive-changes",
-            "security.secrets"
-          ]
-        },
-        {
-          "file": "user-data.md",
-          "signal": "surface:user-data",
-          "ruleIds": [
-            "security.user-data"
-          ]
-        },
-        {
-          "file": "reversal.md",
-          "signal": "condition:operational-change",
-          "ruleIds": [
-            "security.reversal"
-          ]
-        },
-        {
-          "file": "dependencies.md",
-          "signal": "surface:dependencies",
-          "ruleIds": [
-            "dependencies.core",
-            "dependencies.generated-state"
-          ]
-        }
+      "ruleIds": [
+        "evidence.disagreement",
+        "testing.core",
+        "testing.model-derived-space",
+        "evidence.core",
+        "evidence.hierarchy",
+        "evidence.claim-matching",
+        "evidence.performance",
+        "evidence.static-analysis"
       ]
     },
     "human-facing-output": {
-      "mode": "router",
+      "moment": "writing anything a person will read, in a reply or in any artifact",
       "discoverySummary": "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability.",
-      "description": "Invoke this Doctrine skill when current work involves anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; visual or interaction design, information architecture, onboarding, navigation, or cultural fit; wording a person will read: errors, help text, labels, reports, comments, documentation prose; writing, editing, translating, or reviewing Korean that a person will read; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; or log lines, failure diagnostics, severity levels, or operational observability output.",
+      "description": "Wording a person will read, including a reply to the owner: reports, errors, help text, labels, comments, documentation prose; writing, editing, translating, or reviewing Korean, in a reply or in any artifact a person will read; anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; log lines, failure diagnostics, severity levels, or operational observability output; or visual or interaction design, information architecture, onboarding, navigation, or cultural fit. Read this doctrine BEFORE writing anything a person will read, in a reply or in any artifact.",
       "signals": [
-        "surface:human-facing",
-        "condition:cultural-design",
         "surface:human-language",
         "condition:korean-language",
+        "surface:human-facing",
         "condition:locale",
-        "surface:logging"
+        "surface:logging",
+        "condition:cultural-design"
       ],
       "ruleIds": [
         "human.surface-core",
@@ -2231,62 +1850,12 @@
         "language.korean",
         "language.locale-culture",
         "logging.core"
-      ],
-      "references": [
-        {
-          "file": "surfaces.md",
-          "signal": "surface:human-facing",
-          "ruleIds": [
-            "human.surface-core",
-            "human.visible-states",
-            "human.accessibility",
-            "human.cli",
-            "human.no-machinery-leak"
-          ]
-        },
-        {
-          "file": "cultural-fit.md",
-          "signal": "condition:cultural-design",
-          "ruleIds": [
-            "human.cultural-design"
-          ]
-        },
-        {
-          "file": "language.md",
-          "signal": "surface:human-language",
-          "ruleIds": [
-            "language.core",
-            "language.errors",
-            "language.register"
-          ]
-        },
-        {
-          "file": "korean.md",
-          "signal": "condition:korean-language",
-          "ruleIds": [
-            "language.korean"
-          ]
-        },
-        {
-          "file": "locale.md",
-          "signal": "condition:locale",
-          "ruleIds": [
-            "language.locale-culture"
-          ]
-        },
-        {
-          "file": "logging.md",
-          "signal": "surface:logging",
-          "ruleIds": [
-            "logging.core"
-          ]
-        }
       ]
     },
     "comments-and-documentation": {
-      "mode": "router",
+      "moment": "writing or reviewing a comment, docstring, README, runbook, or changelog",
       "discoverySummary": "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth.",
-      "description": "Invoke this Doctrine skill when current work involves writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation.",
+      "description": "Writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation. Read this doctrine BEFORE writing or reviewing a comment, docstring, README, runbook, or changelog.",
       "signals": [
         "surface:comments",
         "surface:documentation"
@@ -2300,46 +1869,23 @@
         "documentation.current-truth",
         "documentation.task-state-transform",
         "documentation.durable-prose"
-      ],
-      "references": [
-        {
-          "file": "comments.md",
-          "signal": "surface:comments",
-          "ruleIds": [
-            "comments.core",
-            "comments.api-contract",
-            "comments.review"
-          ]
-        },
-        {
-          "file": "documentation.md",
-          "signal": "surface:documentation",
-          "ruleIds": [
-            "documentation.core",
-            "documentation.cold-reader",
-            "documentation.current-truth",
-            "documentation.task-state-transform",
-            "documentation.durable-prose"
-          ]
-        }
       ]
     },
     "version-control": {
-      "mode": "inline",
+      "moment": "running git: staging, committing, branching, or touching history",
       "discoverySummary": "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.",
-      "description": "Invoke this Doctrine skill when current work involves running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history.",
+      "description": "Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history. Read this doctrine BEFORE running git: staging, committing, branching, or touching history.",
       "signals": [
         "surface:version-control"
       ],
       "ruleIds": [
         "version-control.authority"
-      ],
-      "references": []
+      ]
     },
     "task-continuity": {
-      "mode": "router",
+      "moment": "continuing long work after failure, a break, or compaction, or under a budget",
       "discoverySummary": "Preserves safe orientation across long work, failures, context loss, compaction, and explicit run budgets while keeping the goal stable and discarded hypotheses discarded.",
-      "description": "Invoke this Doctrine skill when current work involves long or multi-stage work where delegation and accumulated state make attention management matter; a failed attempt, work that looks blocked, or an approach that keeps failing; deciding whether to record durable task state that must survive context loss; returning after a break, restart, or context loss, or finding changes you cannot explain; imminent or just-completed context compaction; or an owner-stated limit on tokens, time, tool calls, cost, or other execution resources.",
+      "description": "Long or multi-stage work where delegation and accumulated state make attention management matter; a failed attempt, work that looks blocked, or an approach that keeps failing; deciding whether to record durable task state that must survive context loss; returning after a break, restart, or context loss, or finding changes you cannot explain; imminent or just-completed context compaction; or an owner-stated limit on tokens, time, tool calls, cost, or other execution resources. Read this doctrine BEFORE continuing long work after failure, a break, or compaction, or under a budget.",
       "signals": [
         "condition:continuity-pressure",
         "condition:execution-friction",
@@ -2356,57 +1902,12 @@
         "continuity.reentry",
         "continuity.compaction",
         "continuity.run-budgets"
-      ],
-      "references": [
-        {
-          "file": "core.md",
-          "signal": "condition:continuity-pressure",
-          "ruleIds": [
-            "continuity.core"
-          ]
-        },
-        {
-          "file": "persistence.md",
-          "signal": "condition:execution-friction",
-          "ruleIds": [
-            "judgment.persistence"
-          ]
-        },
-        {
-          "file": "durable-state.md",
-          "signal": "condition:durable-state",
-          "ruleIds": [
-            "continuity.durable-state"
-          ]
-        },
-        {
-          "file": "reentry.md",
-          "signal": "condition:reentry",
-          "ruleIds": [
-            "continuity.tripwires",
-            "continuity.reentry"
-          ]
-        },
-        {
-          "file": "compaction.md",
-          "signal": "condition:compaction",
-          "ruleIds": [
-            "continuity.compaction"
-          ]
-        },
-        {
-          "file": "budgets.md",
-          "signal": "condition:run-budget",
-          "ruleIds": [
-            "continuity.run-budgets"
-          ]
-        }
       ]
     },
     "completion-and-review": {
-      "mode": "router",
+      "moment": "saying the work is done, writing the summary, or claiming verification",
       "discoverySummary": "Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies.",
-      "description": "Invoke this Doctrine skill when current work involves rereading the finished diff before saying the work is done; deciding whether the requested outcome actually exists yet; or writing up what changed, what was verified, what is still unverified or blocked.",
+      "description": "Rereading the finished diff before saying the work is done; deciding or claiming that the requested outcome actually exists; or writing the final summary or status: what changed, what was verified, what is still unverified or blocked. Read this doctrine BEFORE saying the work is done, writing the summary, or claiming verification.",
       "signals": [
         "stage:review",
         "stage:completion",
@@ -2417,30 +1918,6 @@
         "completion.criteria",
         "reporting.completion-report",
         "standard.final"
-      ],
-      "references": [
-        {
-          "file": "review.md",
-          "signal": "stage:review",
-          "ruleIds": [
-            "review.full-diff"
-          ]
-        },
-        {
-          "file": "completion.md",
-          "signal": "stage:completion",
-          "ruleIds": [
-            "completion.criteria",
-            "standard.final"
-          ]
-        },
-        {
-          "file": "reporting.md",
-          "signal": "stage:report",
-          "ruleIds": [
-            "reporting.completion-report"
-          ]
-        }
       ]
     }
   },
@@ -2454,11 +1931,11 @@
     "preloadedSkills": [
       "engineering-doctrine:design-before-implementation",
       "engineering-doctrine:planning",
+      "engineering-doctrine:mutation-safety",
       "engineering-doctrine:implementation",
       "engineering-doctrine:artifact-nativeness",
-      "engineering-doctrine:mutation-safety",
-      "engineering-doctrine:verification-and-evidence",
       "engineering-doctrine:external-surface-contracts",
+      "engineering-doctrine:verification-and-evidence",
       "engineering-doctrine:human-facing-output",
       "engineering-doctrine:comments-and-documentation",
       "engineering-doctrine:version-control",
@@ -2487,10 +1964,19 @@
       "evidence": "session transcript",
       "opensWhenUnprovable": true
     },
+    "reports": {
+      "source": "session transcript",
+      "facts": [
+        "doctrine skills invoked",
+        "tools used in the batch",
+        "git subcommands seen"
+      ],
+      "suppressedWhenUnchanged": true
+    },
     "checkpoints": [
       {
         "event": "UserPromptSubmit",
-        "purpose": "initial applicability judgment"
+        "purpose": "doctrine state plus the initial moment judgment"
       },
       {
         "event": "PreToolUse",
@@ -2498,7 +1984,7 @@
       },
       {
         "event": "PostToolBatch",
-        "purpose": "post-evidence applicability reassessment"
+        "purpose": "doctrine state after an acting batch, when it changed"
       },
       {
         "event": "PostToolUseFailure",

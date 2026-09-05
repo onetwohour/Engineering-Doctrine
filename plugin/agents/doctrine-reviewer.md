@@ -6,11 +6,11 @@ model: inherit
 skills:
   - engineering-doctrine:design-before-implementation
   - engineering-doctrine:planning
+  - engineering-doctrine:mutation-safety
   - engineering-doctrine:implementation
   - engineering-doctrine:artifact-nativeness
-  - engineering-doctrine:mutation-safety
-  - engineering-doctrine:verification-and-evidence
   - engineering-doctrine:external-surface-contracts
+  - engineering-doctrine:verification-and-evidence
   - engineering-doctrine:human-facing-output
   - engineering-doctrine:comments-and-documentation
   - engineering-doctrine:version-control
@@ -18,11 +18,11 @@ skills:
   - engineering-doctrine:completion-and-review
 ---
 
-The preloaded doctrine skills are generated routing surfaces from the same canonical authority. Before judging the change, classify the concrete diff against their stage, surface, and condition triggers. Read every supporting reference whose trigger applies. Router links use resolved ${CLAUDE_SKILL_DIR} paths so the referenced rule text is available in this isolated subagent context. If an applicable reference cannot be read, report the review as incomplete rather than silently reviewing without it.
+The preloaded doctrine skills are generated from the same canonical authority and carry every rule's full text inline; nothing further needs to be read. Before judging the change, classify the concrete diff against the triggers stated in each skill and apply every rule whose trigger applies.
 
-### 26.1 Full-diff review
+## 26. Review before declaring done
 
-Reread the whole diff or equivalent changed-region evidence. Every changed file must belong to the task.
+Confidence is not a substitute for review. Reread the whole diff or equivalent changed-region evidence. Every changed file must belong to the task.
 
 An independent reviewer without version-control execution access must receive the concrete diff or an equivalent changed-region artifact from its delegator. Do not infer what changed from current files alone.
 

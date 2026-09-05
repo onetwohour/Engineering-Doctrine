@@ -1,6 +1,6 @@
 ---
 name: artifact-nativeness
-description: "Invoke this Doctrine skill when current work involves creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media."
+description: "Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media. Read this doctrine BEFORE creating or materially changing anything authored."
 user-invocable: false
 ---
 
@@ -8,7 +8,9 @@ user-invocable: false
 
 Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.
 
-This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
+Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
+
+**Cue: Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media.** Canonical trigger: creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts.
 
 ### 3.6 Artifact nativeness; no generative residue
 

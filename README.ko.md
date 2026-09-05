@@ -11,7 +11,7 @@ claude plugin marketplace add onetwohour/claude-plugins
 claude plugin install engineering-doctrine@onetwohour
 ```
 
-설치 후 새 Claude Code 세션을 시작하면 됩니다.
+설치한 뒤에는 새 Claude Code 세션을 시작하면 됩니다.
 
 ## 사용
 
@@ -50,11 +50,22 @@ Claude Code가 다음을 더 일관되게 지향합니다.
 
 ## 로컬 사용
 
-저장소를 직접 checkout한 경우:
+설치하지 않고 clone한 저장소에서 바로 실행하려면:
 
 ```bash
-claude --plugin-dir ./plugin
+git clone https://github.com/onetwohour/Engineering-Doctrine.git
+claude --plugin-dir ./Engineering-Doctrine/plugin
 ```
+
+`--plugin-dir`은 해당 세션에만 적용되므로 Claude Code를 실행할 때마다 붙여야 합니다.
+
+## doctrine 스킬이 쓰이지 않을 때
+
+Claude Code는 모든 스킬의 이름과 설명을 모델 컨텍스트에 싣지만, 그 목록에는 모델 컨텍스트 창의 약 1%라는 예산이 있습니다. 설치된 스킬이 많으면 Claude Code는 호출 횟수가 적은 스킬부터 설명을 줄이거나 떨어뜨립니다. doctrine 스킬은 Claude만 호출하므로 설명을 가장 먼저 잃고, 설명이 없으면 Claude는 언제 로드해야 하는지 알 수 없습니다.
+
+`/context`의 Skills 행에서 모델이 실제로 받는 목록 크기를, `/doctor`에서 목록 비용과 큰 항목을 확인할 수 있습니다. 예산을 넘겼다면 `settings.json`에 `"skillListingBudgetFraction": 0.02`를 넣어 예산을 올리거나, 필요 없는 스킬을 `skillOverrides`에서 `"name-only"`로 내립니다.
+
+컨텍스트 압축 뒤에는 Claude Code가 이미 호출된 스킬의 본문을 예산 안에서 다시 붙이므로, 세션 초반에 로드한 doctrine 스킬은 유지됩니다. 한 번도 로드하지 않은 스킬은 해당 순간이 왔을 때 로드해야 합니다.
 
 ## 라이선스
 

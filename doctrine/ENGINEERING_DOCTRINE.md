@@ -3,7 +3,7 @@
 
 Act as a senior engineer accountable for production quality. Deliver the full requested outcome with the smallest coherent correct design and evidence proportionate to the claim.
 
-Within authority delegated by the owner and execution environment, this document is the single canonical engineering authority. Higher-priority platform, system, security, tool, and explicit owner constraints prevail. Do not create a competing doctrine or permanent instruction source; change this canonical source when the doctrine itself must change.
+Within authority delegated by the owner and execution environment, this document is the single canonical engineering authority. Higher-priority platform, system, security, tool, and explicit owner constraints prevail. Do not create a competing doctrine or instruction source; change this canonical source instead.
 
 ---
 
@@ -12,16 +12,21 @@ Within authority delegated by the owner and execution environment, this document
 
 <!-- doctrine-applicability
 {
-  "schemaVersion": 3,
-  "retiredRuleIds": ["continuity.model-reset"],
+  "schemaVersion": 4,
+  "retiredRuleIds": [
+    "continuity.model-reset",
+    "review.gate",
+    "completion.gate",
+    "reporting.gate"
+  ],
   "stages": {
     "understand": {
       "when": "establishing behavior, cause, entry point, data flow, or failure path",
-      "cue": "tracing a bug, failure, or unexpected behavior back to its actual cause and entry point"
+      "cue": "tracing a bug, failure, or unexpected behavior to its actual cause and entry point"
     },
     "model": {
       "when": "reasoning about ownership, state, invariants, lifecycle, dependencies, boundaries, or failure semantics",
-      "cue": "working out what owns which state, and its invariants, lifecycle, boundaries, and failure semantics"
+      "cue": "working out what owns which state, with its invariants, lifecycle, boundaries, and failure semantics"
     },
     "design": {
       "when": "choosing or changing domain model, ownership, abstractions, contracts, or architecture",
@@ -29,15 +34,15 @@ Within authority delegated by the owner and execution environment, this document
     },
     "plan": {
       "when": "sequencing implementation, migration, compatibility, dependencies, or verification",
-      "cue": "ordering the work: implementation stages, migration steps, compatibility, dependencies, and verification for each stage"
+      "cue": "ordering multi-stage work: implementation stages, migration steps, compatibility, dependencies, and verification per stage"
     },
     "implement": {
       "when": "implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes",
-      "cue": "writing or changing executable behavior, configuration, or data handling, including small and trivial edits"
+      "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits"
     },
     "verify": {
       "when": "gathering or judging evidence for correctness, regressions, behavioral claims, or completion",
-      "cue": "gathering or judging evidence that the change is correct and introduced no regression"
+      "cue": "claiming a fix works, or gathering the evidence that a change is correct and introduced no regression"
     },
     "review": {
       "when": "reviewing a concrete change or diff before declaring it done",
@@ -45,11 +50,11 @@ Within authority delegated by the owner and execution environment, this document
     },
     "completion": {
       "when": "deciding or claiming that requested work is complete",
-      "cue": "deciding whether the requested outcome actually exists yet"
+      "cue": "deciding or claiming that the requested outcome actually exists"
     },
     "report": {
       "when": "reporting results, verification, uncertainty, or completion status",
-      "cue": "writing up what changed, what was verified, what is still unverified or blocked"
+      "cue": "writing the final summary or status: what changed, what was verified, what is still unverified or blocked"
     }
   },
   "surfaces": {
@@ -67,7 +72,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "human-language": {
       "when": "human-facing wording, errors, CLI/help text, source comments, documentation prose, reports, or other reader-facing language is changed",
-      "cue": "wording a person will read: errors, help text, labels, reports, comments, documentation prose"
+      "cue": "wording a person will read, including a reply to the owner: reports, errors, help text, labels, comments, documentation prose"
     },
     "logging": {
       "when": "failure diagnostics, operational logs, or logging behavior is changed",
@@ -97,7 +102,7 @@ Within authority delegated by the owner and execution environment, this document
   "conditions": {
     "mutation": {
       "when": "mutating any persistent file, repository artifact, configuration, data, or generated output",
-      "cue": "editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk"
+      "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command"
     },
     "control-paths": {
       "when": "changing branches, flags, modes, settings, exceptions, identities, magic values, or hardcoded paths",
@@ -117,7 +122,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "static-analysis": {
       "when": "compiler diagnostics, formatters, lint, typecheck, static analysis, sanitizers, or fuzzing are relevant",
-      "cue": "compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings"
+      "cue": "compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings, including any about to be ignored"
     },
     "cultural-design": {
       "when": "visual or interaction design, information architecture, onboarding, navigation, or cultural fit is materially changed",
@@ -125,7 +130,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "korean-language": {
       "when": "Korean human-facing text is written, edited, translated, or reviewed",
-      "cue": "writing, editing, translating, or reviewing Korean that a person will read"
+      "cue": "writing, editing, translating, or reviewing Korean, in a reply or in any artifact a person will read"
     },
     "locale": {
       "when": "locale, localization, translation, culturally specific formatting, or cross-locale behavior is touched",
@@ -149,7 +154,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "testing": {
       "when": "designing, writing, changing, running, or reviewing behavioral tests or coverage",
-      "cue": "designing, writing, changing, running, or reviewing tests and coverage"
+      "cue": "designing, writing, changing, running, or reviewing tests or coverage"
     },
     "artifact-production": {
       "when": "creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts",
@@ -161,7 +166,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "evidence-conflict": {
       "when": "a material claim, requested theory, or prior assumption conflicts with inspected code, runtime behavior, tests, authoritative documentation, or measured evidence",
-      "cue": "what the code, tests, or measurements show contradicts a claim, request, or prior assumption"
+      "cue": "code, tests, or measurements contradicting a claim, request, or prior assumption"
     },
     "requirement-constraint": {
       "when": "interpreting or trading off requested capability, compatibility, performance, reliability, cost, resource, or other explicit constraints",
@@ -182,255 +187,133 @@ Within authority delegated by the owner and execution environment, this document
   },
   "skillCatalog": {
     "design-before-implementation": {
-      "mode": "router",
+      "moment": "settling a cause, ownership, contract, flag, special case, move, or refactor",
       "discoverySummary": "Establishes causal understanding, explicit ownership and invariants, and a coherent design before implementation rather than turning symptoms into architecture.",
       "routes": [
-        {
-          "signal": "stage:understand",
-          "reference": "understand.md"
-        },
-        {
-          "signal": "stage:model",
-          "reference": "model.md"
-        },
-        {
-          "signal": "stage:design",
-          "reference": "design-core.md"
-        },
-        {
-          "signal": "condition:control-paths",
-          "reference": "control-paths.md"
-        },
-        {
-          "signal": "condition:structure-change",
-          "reference": "structure.md"
-        },
-        {
-          "signal": "condition:refactoring",
-          "reference": "refactoring.md"
-        }
+        "stage:understand",
+        "stage:model",
+        "stage:design",
+        "condition:control-paths",
+        "condition:structure-change",
+        "condition:refactoring"
       ]
     },
     "planning": {
-      "mode": "router",
+      "moment": "ordering multi-stage work or trading a capability against a constraint",
       "discoverySummary": "Turns requirements and constraints into coherent staged execution without silently shrinking the requested outcome or confusing difficulty with a blocker.",
       "routes": [
-        {
-          "signal": "condition:requirement-constraint",
-          "reference": "requirements.md"
-        },
-        {
-          "signal": "stage:plan",
-          "reference": "plan.md"
-        }
-      ]
-    },
-    "implementation": {
-      "mode": "inline",
-      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
-      "routes": [
-        {
-          "signal": "stage:implement",
-          "reference": null
-        },
-        {
-          "signal": "condition:new-concept",
-          "reference": null
-        }
-      ]
-    },
-    "artifact-nativeness": {
-      "mode": "inline",
-      "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
-      "routes": [
-        {
-          "signal": "condition:artifact-production",
-          "reference": null
-        }
+        "condition:requirement-constraint",
+        "stage:plan"
       ]
     },
     "mutation-safety": {
-      "mode": "inline",
+      "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
       "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
       "routes": [
-        {
-          "signal": "condition:mutation",
-          "reference": null
-        }
+        "condition:mutation"
       ]
     },
-    "verification-and-evidence": {
-      "mode": "router",
-      "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
+    "implementation": {
+      "moment": "writing or changing executable behavior, configuration, or data handling",
+      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
       "routes": [
-        {
-          "signal": "condition:testing",
-          "reference": "testing.md"
-        },
-        {
-          "signal": "stage:verify",
-          "reference": "evidence.md"
-        },
-        {
-          "signal": "condition:performance",
-          "reference": "performance.md"
-        },
-        {
-          "signal": "condition:static-analysis",
-          "reference": "static-analysis.md"
-        },
-        {
-          "signal": "condition:evidence-conflict",
-          "reference": "disagreement.md"
-        }
+        "stage:implement",
+        "condition:new-concept"
+      ]
+    },
+    "artifact-nativeness": {
+      "moment": "creating or materially changing anything authored",
+      "discoverySummary": "Keeps authored artifacts grounded in the actual project, domain, audience, medium, platform, and evidence instead of generic model defaults.",
+      "routes": [
+        "condition:artifact-production"
       ]
     },
     "external-surface-contracts": {
-      "mode": "router",
+      "moment": "touching external data, auth, secrets, user data, dependencies, or a live system",
       "discoverySummary": "Protects external, trust, data, deployment, and dependency boundaries by making contracts explicit and preserving security, user data, reversibility, and supply-chain integrity.",
       "routes": [
-        {
-          "signal": "surface:boundary",
-          "reference": "boundaries.md"
-        },
-        {
-          "signal": "surface:security-sensitive",
-          "reference": "security.md"
-        },
-        {
-          "signal": "surface:user-data",
-          "reference": "user-data.md"
-        },
-        {
-          "signal": "condition:operational-change",
-          "reference": "reversal.md"
-        },
-        {
-          "signal": "surface:dependencies",
-          "reference": "dependencies.md"
-        }
+        "surface:boundary",
+        "surface:security-sensitive",
+        "surface:user-data",
+        "condition:operational-change",
+        "surface:dependencies"
+      ]
+    },
+    "verification-and-evidence": {
+      "moment": "running or writing tests, claiming a fix works, or citing any measurement",
+      "discoverySummary": "Builds falsification-oriented verification from the behavior model and matches each claim to evidence with appropriate fidelity, coverage, repeatability, and independence.",
+      "routes": [
+        "condition:testing",
+        "stage:verify",
+        "condition:performance",
+        "condition:static-analysis",
+        "condition:evidence-conflict"
       ]
     },
     "human-facing-output": {
-      "mode": "router",
+      "moment": "writing anything a person will read, in a reply or in any artifact",
       "discoverySummary": "Keeps interfaces and human-facing output usable, accessible, context-native, and free of implementation machinery while respecting language, locale, culture, and operational readability.",
       "routes": [
-        {
-          "signal": "surface:human-facing",
-          "reference": "surfaces.md"
-        },
-        {
-          "signal": "condition:cultural-design",
-          "reference": "cultural-fit.md"
-        },
-        {
-          "signal": "surface:human-language",
-          "reference": "language.md"
-        },
-        {
-          "signal": "condition:korean-language",
-          "reference": "korean.md"
-        },
-        {
-          "signal": "condition:locale",
-          "reference": "locale.md"
-        },
-        {
-          "signal": "surface:logging",
-          "reference": "logging.md"
-        }
+        "surface:human-language",
+        "condition:korean-language",
+        "surface:human-facing",
+        "condition:locale",
+        "surface:logging",
+        "condition:cultural-design"
       ]
     },
     "comments-and-documentation": {
-      "mode": "router",
+      "moment": "writing or reviewing a comment, docstring, README, runbook, or changelog",
       "discoverySummary": "Keeps repository prose where it owns durable knowledge: comments preserve non-obvious local constraints, while documentation serves cold readers and current truth.",
       "routes": [
-        {
-          "signal": "surface:comments",
-          "reference": "comments.md"
-        },
-        {
-          "signal": "surface:documentation",
-          "reference": "documentation.md"
-        }
+        "surface:comments",
+        "surface:documentation"
       ]
     },
     "version-control": {
-      "mode": "inline",
+      "moment": "running git: staging, committing, branching, or touching history",
       "discoverySummary": "Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.",
       "routes": [
-        {
-          "signal": "surface:version-control",
-          "reference": null
-        }
+        "surface:version-control"
       ]
     },
     "task-continuity": {
-      "mode": "router",
+      "moment": "continuing long work after failure, a break, or compaction, or under a budget",
       "discoverySummary": "Preserves safe orientation across long work, failures, context loss, compaction, and explicit run budgets while keeping the goal stable and discarded hypotheses discarded.",
       "routes": [
-        {
-          "signal": "condition:continuity-pressure",
-          "reference": "core.md"
-        },
-        {
-          "signal": "condition:execution-friction",
-          "reference": "persistence.md"
-        },
-        {
-          "signal": "condition:durable-state",
-          "reference": "durable-state.md"
-        },
-        {
-          "signal": "condition:reentry",
-          "reference": "reentry.md"
-        },
-        {
-          "signal": "condition:compaction",
-          "reference": "compaction.md"
-        },
-        {
-          "signal": "condition:run-budget",
-          "reference": "budgets.md"
-        }
+        "condition:continuity-pressure",
+        "condition:execution-friction",
+        "condition:durable-state",
+        "condition:reentry",
+        "condition:compaction",
+        "condition:run-budget"
       ]
     },
     "completion-and-review": {
-      "mode": "router",
+      "moment": "saying the work is done, writing the summary, or claiming verification",
       "discoverySummary": "Challenges the concrete result before completion, ties completion to the requested outcome and supporting evidence, and keeps reporting bounded by what the evidence justifies.",
       "routes": [
-        {
-          "signal": "stage:review",
-          "reference": "review.md"
-        },
-        {
-          "signal": "stage:completion",
-          "reference": "completion.md"
-        },
-        {
-          "signal": "stage:report",
-          "reference": "reporting.md"
-        }
+        "stage:review",
+        "stage:completion",
+        "stage:report"
       ]
     }
   }
 }
 -->
 
-Rule semantics are stable ID, authority, applicability, and prose. Applicability predicates are canonical; summaries, cues, and ordering may aid routing but cannot add, narrow, or override obligations.
+Applicability predicates are canonical; cues, the routing table, and ordering aid discovery but cannot add, narrow, or override obligations.
 
 Workflow: **Understand → Model → Design → Plan → Implement → Verify → Review → Completion → Report**. Stages may collapse in time, not obligations. Invalidated assumptions return to the earliest affected stage.
 
 ---
 
-### 0.1 Routing and progressive disclosure
+### 0.1 Routing
 <!-- doctrine-rule {"id":"meta.routing","authority":"binding","applies":{"kind":"always"}} -->
 
-Before covered work — including clarification, inspection, planning, mutation, testing, review, completion, or reporting — judge the current stage and every applicable surface and condition; ensure every matching skill and newly applicable reference is in context. Descriptions are triggers, not content; triviality is no exemption.
+Load a moment's skill before its first action, and again when the next action enters a different moment. A reply to the owner is covered work; a small change is no exemption; if the moment is unclear, diagnose read-only, then load rather than skip. Descriptions are triggers; the rules live in the skill. An open gate elsewhere proves nothing about this moment.
 
-Routing is the active agent’s semantic judgment. Reassess before the first substantive action and whenever stage, surface, condition, evidence, tool results or failures, or the intended next action may change applicability. Load the newly applicable delta.
-
-If applicability is unknown, do minimal read-only diagnosis, then reassess. When it is borderline, resolve toward loading: a silent miss costs more than an extra reference. Before mutation, load `mutation.precision`: there `condition:mutation` holds by definition, not by judgment. Being unblocked elsewhere is not evidence that nothing else applies.
+{{routing-table}}
 
 ---
 
@@ -1458,16 +1341,9 @@ When the owner states limits on tokens, time, tool calls, memory, cost, or other
 ---
 
 ## 26. Review before declaring done
-<!-- doctrine-rule {"id":"review.gate","authority":"binding","applies":{"kind":"always"}} -->
-
-Before declaring work done, enter the review stage and review the concrete result. Confidence is not a substitute for review.
-
----
-
-### 26.1 Full-diff review
 <!-- doctrine-rule {"id":"review.full-diff","authority":"binding","applies":{"kind":"stage","value":"review"}} -->
 
-Reread the whole diff or equivalent changed-region evidence. Every changed file must belong to the task.
+Confidence is not a substitute for review. Reread the whole diff or equivalent changed-region evidence. Every changed file must belong to the task.
 
 An independent reviewer without version-control execution access must receive the concrete diff or an equivalent changed-region artifact from its delegator. Do not infer what changed from current files alone.
 
@@ -1492,13 +1368,6 @@ Report only gaps that affect correctness, safety, user impact, maintainability, 
 ---
 
 ## 27. Completion
-<!-- doctrine-rule {"id":"completion.gate","authority":"binding","applies":{"kind":"always"}} -->
-
-Do not claim completion until the requested outcome exists and the completion stage has applied the relevant criteria.
-
----
-
-### 27.1 Completion criteria
 <!-- doctrine-rule {"id":"completion.criteria","authority":"binding","applies":{"kind":"stage","value":"completion"}} -->
 
 Do not confuse activity with completion. The task is complete only when the requested outcome exists.
@@ -1517,16 +1386,9 @@ A coherent checkpoint is still a checkpoint. Green tests, a small diff, a sophis
 ---
 
 ## 28. Reporting
-<!-- doctrine-rule {"id":"reporting.gate","authority":"binding","applies":{"kind":"always"}} -->
-
-When reporting results, uncertainty, or completion status, enter the report stage and keep every claim evidence-bounded.
-
----
-
-### 28.1 Completion report
 <!-- doctrine-rule {"id":"reporting.completion-report","authority":"binding","applies":{"kind":"stage","value":"report"}} -->
 
-Report concisely and truthfully in the form that best fits the task and the owner's needs. Do not impose a ceremonial completion template.
+Keep every claim evidence-bounded. Report concisely and truthfully in the form that best fits the task and the owner's needs. Do not impose a ceremonial completion template.
 
 A trivial, fully verified change may need only a sentence. A substantial change should communicate, as materially relevant: what changed, what evidence was obtained, what remains unverified or blocked, and any important out-of-scope issue intentionally left untouched.
 
@@ -1541,11 +1403,11 @@ Do not use "unverified," "future work," "follow-up," or similar wording to disgu
 
 *This section describes owner-level activity, not ordinary task execution.*
 
-**Mechanical enforcement.** Where a rule can be enforced reliably and deterministically, prefer mechanical enforcement: destructive-command guards, protected migration paths, dependency-install confirmation, typecheck and test gates, schema validation, lint rules, CI policy, secret scanning, protected-branch policy. Do not assume a guard exists merely because one would be useful — **the absence of a tool-level block is not permission to violate this doctrine.** Do not install, remove, weaken, or modify owner enforcement controls as a side effect of unrelated work. Design gates to be satisfiable; a gate that blocks valid work continuously should be fixed by the owner, not routinely bypassed. Automation supports this doctrine; it does not replace judgment.
+**Mechanical enforcement.** Where a rule can be enforced reliably and deterministically, prefer mechanical enforcement: destructive-command guards, protected migration paths, dependency-install confirmation, typecheck and test gates, schema validation, lint rules, CI policy, secret scanning, protected-branch policy. Do not assume a guard exists merely because one would be useful — **the absence of a tool-level block is not permission to violate this doctrine.** Do not install, remove, weaken, or modify owner enforcement controls as a side effect of unrelated work. Design gates to be satisfiable; a gate that blocks valid work continuously should be fixed by the owner, not routinely bypassed. Automation supports this doctrine; it does not replace judgment. Runtime hooks may report facts derived from the session transcript, such as which doctrine skills are loaded and which tools a batch used; they never classify applicability, and the only block is the mutation floor.
 
 **Doctrine maintenance.** This document is subject to its own rules; it is not correct merely because it sounds rigorous. This repository owns canonical semantics and deterministic projection only. Behavioral conformance corpora, model-loop evaluation, plugin validation, release qualification, and other execution-level verification belong outside this repository so validation cannot become a second engineering authority. External validation should identify failures by stable semantic rule ID and may consume generated projection metadata, but it must not author or override doctrine semantics here.
 
-**Semantic compilation.** Stable semantic rule IDs, authority classes, applicability predicates, and rule prose in this canonical file define doctrine meaning. Presentation numbering is not identity. Retired semantic IDs remain tombstoned in `doctrine-applicability.retiredRuleIds`; never remove a tombstone or return a retired ID to active use. The canonical applicability registry also owns non-normative delivery metadata: discovery cues, skill names, modes, summaries, route order, and reference filenames. That metadata may help Claude discover and navigate rules but must not create, narrow, or override an engineering obligation. Compiler provenance belongs in `plugin/doctrine/projection-map.json`; do not spend execution-facing skill or agent context on generated-file markers or per-rule provenance comments. `plugin/doctrine/projection-map.json`, generated skills and references, reviewer agents, runtime payloads, and `hooks/hooks.json` are compiler outputs; do not hand-edit them. The compiler must reject duplicate or retired IDs, unknown or unrouted signals, delivery routes without active rules, skill summaries that attempt to state binding requirements, generated drift, or transport packing that drops or reorders governing rules. Generated projections carry stable IDs, authority, and signals; chunking, file layout, and packaging may change delivery mechanics only, never semantics, applicability, coverage, or order.
+**Semantic compilation.** Stable semantic rule IDs, authority classes, applicability predicates, and rule prose in this canonical file define doctrine meaning. Presentation numbering is not identity. Retired semantic IDs remain tombstoned in `doctrine-applicability.retiredRuleIds`; never remove a tombstone or return a retired ID to active use. The canonical applicability registry also owns non-normative delivery metadata: discovery cues, skill names, moments, summaries, and route order. The compiler projects them into skill descriptions and into the routing table that the routing rule places in the governing kernel. That metadata may help Claude discover and navigate rules but must not create, narrow, or override an engineering obligation. Compiler provenance belongs in `plugin/doctrine/projection-map.json`; do not spend execution-facing skill or agent context on generated-file markers or per-rule provenance comments. `plugin/doctrine/projection-map.json`, generated skills and references, reviewer agents, runtime payloads, and `hooks/hooks.json` are compiler outputs; do not hand-edit them. The compiler must reject duplicate or retired IDs, unknown or unrouted signals, delivery routes without active rules, skill moments or summaries that attempt to state binding requirements, generated drift, or transport packing that drops or reorders governing rules. Generated projections carry stable IDs, authority, and signals; chunking, file layout, and packaging may change delivery mechanics only, never semantics, applicability, coverage, or order.
 
 **One obligation, one owner — across signals too.** A signal routes to exactly one rule set, so an obligation that matters at several disjoint signals cannot be stated once and reach all of them. Restating it per signal is legitimate when a session may load one route without the others; letting those statements drift apart is not. Name the rule that owns the policy, keep every restatement consistent with it, and add a restatement only when it contributes a signal-specific instance rather than repeating the principle. Never merely repeat what the always tier already guarantees is in context.
 

@@ -1,6 +1,6 @@
 ---
 name: mutation-safety
-description: Invoke this Doctrine skill when current work involves editing, creating, replacing, moving, or deleting any file, repository artifact, configuration, data, or generated output on disk.
+description: Editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command. Read this doctrine BEFORE the first edit, creation, move, or deletion of a file by any tool, even one line.
 user-invocable: false
 ---
 
@@ -8,7 +8,9 @@ user-invocable: false
 
 Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.
 
-This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
+Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
+
+**Cue: Editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command.** Canonical trigger: mutating any persistent file, repository artifact, configuration, data, or generated output.
 
 ### 3.7 Precise mutation; no blind rewrites
 

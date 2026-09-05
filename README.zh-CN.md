@@ -50,11 +50,22 @@ Claude Code 会更一致地做到：
 
 ## 本地使用
 
-如果直接 checkout 了此仓库：
+如果不安装，直接从克隆的仓库运行：
 
 ```bash
-claude --plugin-dir ./plugin
+git clone https://github.com/onetwohour/Engineering-Doctrine.git
+claude --plugin-dir ./Engineering-Doctrine/plugin
 ```
+
+`--plugin-dir` 只对当前会话生效，因此每次启动 Claude Code 都需要带上它。
+
+## 如果 doctrine 技能没有被使用
+
+Claude Code 会把每个技能的名称和描述放进模型上下文，但这个列表的预算约为模型上下文窗口的 1%。安装的技能很多时，Claude Code 会从调用最少的技能开始缩短或删除描述。doctrine 技能只由 Claude 自动调用，因此最先失去描述；没有描述，Claude 就无法判断何时加载它们。
+
+用 `/context`（Skills 行显示模型实际收到的列表大小）和 `/doctor`（列表成本及其最大贡献者）检查。如果超出预算，在 `settings.json` 中设置 `"skillListingBudgetFraction": 0.02` 提高预算，或在 `skillOverrides` 中把不需要的技能设为 `"name-only"`。
+
+上下文压缩后，Claude Code 会在预算内重新附加已调用技能的正文，所以会话早期加载过的 doctrine 技能会保留下来；从未加载过的技能仍需在相应时机加载。
 
 ## 许可证
 

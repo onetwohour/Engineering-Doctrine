@@ -1,6 +1,6 @@
 ---
 name: implementation
-description: Invoke this Doctrine skill when current work involves writing or changing executable behavior, configuration, or data handling, including small and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.
+description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.
 user-invocable: false
 ---
 
@@ -8,7 +8,9 @@ user-invocable: false
 
 Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.
 
-This summary is discovery orientation only; the canonical rule projection below carries the binding requirements.
+Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
+
+**Cue: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits.** Canonical trigger: implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes.
 
 ## 10. Scope and root cause
 
@@ -50,6 +52,8 @@ When multiple paths can mutate the same state, identify who owns the decision an
 If implementation exposes evidence that invalidates the design, return to the earliest affected stage and correct the model rather than accumulating patches around the contradiction.
 
 ---
+
+**Cue: Adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.** Canonical trigger: introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction.
 
 ### 13.1 Find the existing owner before adding a concept
 

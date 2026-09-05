@@ -11,7 +11,7 @@ claude plugin marketplace add onetwohour/claude-plugins
 claude plugin install engineering-doctrine@onetwohour
 ```
 
-After installation, start a new Claude Code session.
+After installing, start a new Claude Code session.
 
 ## Usage
 
@@ -50,11 +50,22 @@ The complete Engineering Doctrine is available at [doctrine/ENGINEERING_DOCTRINE
 
 ## Local Usage
 
-If you checked out this repository directly:
+To run the plugin from a clone without installing it:
 
 ```bash
-claude --plugin-dir ./plugin
+git clone https://github.com/onetwohour/Engineering-Doctrine.git
+claude --plugin-dir ./Engineering-Doctrine/plugin
 ```
+
+`--plugin-dir` applies to that session only, so pass it every time you start Claude Code.
+
+## If the doctrine skills are not being used
+
+Claude Code lists every skill's name and description in the model's context, but that listing has a budget of about 1% of the model's context window. When many skills are installed, Claude Code shortens or drops descriptions, starting with the skills invoked least. The doctrine skills are loaded only by Claude, so they are the first to lose their descriptions, and without a description Claude cannot tell when to load them.
+
+Check with `/context` (the Skills row shows the listing as the model receives it) and `/doctor` (the listing's cost and its biggest contributors). If the listing is over budget, raise it in `settings.json` with `"skillListingBudgetFraction": 0.02`, or set skills you do not need to `"name-only"` in `skillOverrides`.
+
+After context compaction, Claude Code re-attaches the text of each invoked skill within a budget, so a doctrine skill loaded earlier in the session stays available. A skill that was never loaded still has to be loaded when its moment comes.
 
 ## License
 
