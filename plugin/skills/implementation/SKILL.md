@@ -1,16 +1,16 @@
 ---
 name: implementation
-description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.
+description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.
 user-invocable: false
 ---
 
 ## Responsibility
 
-Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.
+Implements the chosen design while preserving established contracts, data, and behavior, binds each acquired resource to an owner and a guaranteed release, and returns to the model when implementation evidence contradicts it.
 
 Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
 
-**Cue: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits.** Canonical trigger: implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes.
+**Cue: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource.** Canonical trigger: implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes.
 
 ## 10. Scope and root cause
 
@@ -53,9 +53,21 @@ If implementation exposes evidence that invalidates the design, return to the ea
 
 ---
 
+### 13.1 Bind every resource to an owner and a release
+
+Every acquired resource needs an owner and a release bound to that owner's lifetime: memory, file descriptors and handles, sockets, locks, transactions, subprocesses, temporary files, timers, watchers, subscriptions, pooled connections, and device contexts.
+
+Prefer the construct the language already provides for scope-bound release — destructors, `defer`, `using`, `with`, try-with-resources, context managers, structured concurrency scopes — over paired acquire and release calls that a maintainer has to keep matched by hand.
+
+Release must hold on every exit path, not only the successful one: early return, exception, cancellation, timeout, retry, and shutdown. A release that runs only when a later line is reached is already a leak, and so is one a caller has to remember to invoke when nothing in the type says so.
+
+Ownership is singular and transferable, not ambient. Two owners each releasing is a double free; two owners each assuming the other releases is a leak. When a resource genuinely outlives its creator, name the owner it passes to rather than leaving the transfer implicit.
+
+---
+
 **Cue: Adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist.** Canonical trigger: introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction.
 
-### 13.1 Find the existing owner before adding a concept
+### 13.2 Find the existing owner before adding a concept
 
 Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.
 

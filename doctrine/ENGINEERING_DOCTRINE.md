@@ -38,7 +38,7 @@ Within authority delegated by the owner and execution environment, this document
     },
     "implement": {
       "when": "implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes",
-      "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits"
+      "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource"
     },
     "verify": {
       "when": "gathering or judging evidence for correctness, regressions, behavioral claims, or completion",
@@ -102,7 +102,7 @@ Within authority delegated by the owner and execution environment, this document
   "conditions": {
     "mutation": {
       "when": "mutating any persistent file, repository artifact, configuration, data, or generated output",
-      "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command"
+      "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, scratch file, or generated output on disk, by Edit, Write, or a shell command"
     },
     "control-paths": {
       "when": "changing branches, flags, modes, settings, exceptions, identities, magic values, or hardcoded paths",
@@ -208,14 +208,14 @@ Within authority delegated by the owner and execution environment, this document
     },
     "mutation-safety": {
       "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
-      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
+      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, checking what actually changed, and retiring the working artifacts it created.",
       "routes": [
         "condition:mutation"
       ]
     },
     "implementation": {
       "moment": "writing or changing executable behavior, configuration, or data handling",
-      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
+      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, binds each acquired resource to an owner and a guaranteed release, and returns to the model when implementation evidence contradicts it.",
       "routes": [
         "stage:implement",
         "condition:new-concept"
@@ -455,6 +455,19 @@ Prefer the authoritative generator, formatter, AST/CST transform, schema migrati
 After mutation, inspect what actually changed. Re-read the changed region or artifact and, when version control or an equivalent diff is available, inspect the diff for unintended files, occurrences, formatting, encoding, or line-ending changes. A command exiting successfully proves only that the command ran; it does not prove the intended edit occurred.
 
 When version control, snapshots, or equivalent rollback are unavailable, mutation authority becomes narrower, not broader. Before a multi-file, whole-file, or bulk mechanical rewrite, establish a recoverable baseline using the environment's available snapshot, undo, backup, or equivalent mechanism. If no recoverable baseline can be established, decompose the work into small, individually inspected edits whose original state is known well enough to restore. Never rely on "we can inspect it afterward" when the pre-edit state would be lost.
+
+---
+
+### 3.8 Retire what you create
+<!-- doctrine-rule {"id":"mutation.no-abandoned-residue","authority":"binding","applies":{"kind":"condition","value":"mutation"}} -->
+
+Creating something for your own execution creates the obligation to end its life. Scratch scripts, temporary files, intermediate outputs, generated fixtures, backup copies, working branches and stashes, and background processes are yours to retire.
+
+Decide where each one lives before creating it. When the environment designates a scratch or temporary location outside the owner's project, put it there and the obligation ends with the session. Anything written inside the owner's project or working tree is retired when the task ends, unless it survives as a deliberate deliverable the owner has been told about.
+
+Retire only what this task created. Pre-existing files, unexplained working-tree changes, and another task's artifacts fall under {{rule:safety.no-silent-destruction}} and are not yours to sweep up.
+
+Account for the residue before reporting completion: what was removed, what remains, and why it remains. A stray file the owner finds later is a defect, not a detail.
 
 ---
 
@@ -793,7 +806,20 @@ If implementation exposes evidence that invalidates the design, return to the ea
 
 ---
 
-### 13.1 Find the existing owner before adding a concept
+### 13.1 Bind every resource to an owner and a release
+<!-- doctrine-rule {"id":"design.resource-lifetime","authority":"binding","applies":{"kind":"stage","value":"implement"}} -->
+
+Every acquired resource needs an owner and a release bound to that owner's lifetime: memory, file descriptors and handles, sockets, locks, transactions, subprocesses, temporary files, timers, watchers, subscriptions, pooled connections, and device contexts.
+
+Prefer the construct the language already provides for scope-bound release — destructors, `defer`, `using`, `with`, try-with-resources, context managers, structured concurrency scopes — over paired acquire and release calls that a maintainer has to keep matched by hand.
+
+Release must hold on every exit path, not only the successful one: early return, exception, cancellation, timeout, retry, and shutdown. A release that runs only when a later line is reached is already a leak, and so is one a caller has to remember to invoke when nothing in the type says so.
+
+Ownership is singular and transferable, not ambient. Two owners each releasing is a double free; two owners each assuming the other releases is a leak. When a resource genuinely outlives its creator, name the owner it passes to rather than leaving the transfer implicit.
+
+---
+
+### 13.2 Find the existing owner before adding a concept
 <!-- doctrine-rule {"id":"design.reuse-before-adding","authority":"binding","applies":{"kind":"condition","value":"new-concept"}} -->
 
 Before introducing a new type, module, helper, utility, service, repository, adapter, parser, serializer, validator, error type, configuration mechanism, or architectural abstraction, search for the concept and behavior already present in the repository — not only the name you intend to use. If overlapping implementations exist, determine the canonical owner before adding another. A new abstraction needs a clear responsibility, owner, and reason it cannot be expressed by an existing concept without making that concept less coherent.

@@ -38,7 +38,7 @@
       },
       "implement": {
         "when": "implementing or changing executable behavior, configuration, data handling, or generated implementation artifacts, including trivial changes",
-        "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits"
+        "cue": "writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource"
       },
       "verify": {
         "when": "gathering or judging evidence for correctness, regressions, behavioral claims, or completion",
@@ -102,7 +102,7 @@
     "conditions": {
       "mutation": {
         "when": "mutating any persistent file, repository artifact, configuration, data, or generated output",
-        "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command"
+        "cue": "editing, creating, replacing, moving, or deleting any file, configuration, data, scratch file, or generated output on disk, by Edit, Write, or a shell command"
       },
       "control-paths": {
         "when": "changing branches, flags, modes, settings, exceptions, identities, magic values, or hardcoded paths",
@@ -208,14 +208,14 @@
       },
       "mutation-safety": {
         "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
-        "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
+        "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, checking what actually changed, and retiring the working artifacts it created.",
         "routes": [
           "condition:mutation"
         ]
       },
       "implementation": {
         "moment": "writing or changing executable behavior, configuration, or data handling",
-        "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
+        "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, binds each acquired resource to an owner and a guaranteed release, and returns to the model when implementation evidence contradicts it.",
         "routes": [
           "stage:implement",
           "condition:new-concept"
@@ -514,6 +514,24 @@
       },
       "signal": "condition:mutation",
       "references": [],
+      "route": {
+        "kind": "skill",
+        "skill": "mutation-safety"
+      }
+    },
+    {
+      "id": "mutation.no-abandoned-residue",
+      "presentation": "3.8",
+      "title": "Retire what you create",
+      "authority": "binding",
+      "applies": {
+        "kind": "condition",
+        "value": "mutation"
+      },
+      "signal": "condition:mutation",
+      "references": [
+        "safety.no-silent-destruction"
+      ],
       "route": {
         "kind": "skill",
         "skill": "mutation-safety"
@@ -902,8 +920,24 @@
       }
     },
     {
-      "id": "design.reuse-before-adding",
+      "id": "design.resource-lifetime",
       "presentation": "13.1",
+      "title": "Bind every resource to an owner and a release",
+      "authority": "binding",
+      "applies": {
+        "kind": "stage",
+        "value": "implement"
+      },
+      "signal": "stage:implement",
+      "references": [],
+      "route": {
+        "kind": "skill",
+        "skill": "implementation"
+      }
+    },
+    {
+      "id": "design.reuse-before-adding",
+      "presentation": "13.2",
       "title": "Find the existing owner before adding a concept",
       "authority": "binding",
       "applies": {
@@ -1747,19 +1781,20 @@
     },
     "mutation-safety": {
       "moment": "the first edit, creation, move, or deletion of a file by any tool, even one line",
-      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, and checking what actually changed.",
-      "description": "Editing, creating, replacing, moving, or deleting any file, configuration, data, or generated output on disk, by Edit, Write, or a shell command. Read this doctrine BEFORE the first edit, creation, move, or deletion of a file by any tool, even one line.",
+      "discoverySummary": "Controls persistent mutation by proving targets, choosing the narrowest semantic editing mechanism, preserving recoverability, checking what actually changed, and retiring the working artifacts it created.",
+      "description": "Editing, creating, replacing, moving, or deleting any file, configuration, data, scratch file, or generated output on disk, by Edit, Write, or a shell command. Read this doctrine BEFORE the first edit, creation, move, or deletion of a file by any tool, even one line.",
       "signals": [
         "condition:mutation"
       ],
       "ruleIds": [
-        "mutation.precision"
+        "mutation.precision",
+        "mutation.no-abandoned-residue"
       ]
     },
     "implementation": {
       "moment": "writing or changing executable behavior, configuration, or data handling",
-      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, and returns to the model when implementation evidence contradicts it.",
-      "description": "Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.",
+      "discoverySummary": "Implements the chosen design while preserving established contracts, data, and behavior, binds each acquired resource to an owner and a guaranteed release, and returns to the model when implementation evidence contradicts it.",
+      "description": "Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.",
       "signals": [
         "stage:implement",
         "condition:new-concept"
@@ -1767,6 +1802,7 @@
       "ruleIds": [
         "scope.root-cause",
         "workflow.implement",
+        "design.resource-lifetime",
         "design.reuse-before-adding"
       ]
     },
