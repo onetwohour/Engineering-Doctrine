@@ -1,7 +1,6 @@
 ---
 name: planning
 description: "Weighing a stated capability against a stated compatibility, performance, reliability, cost, or resource constraint; or ordering multi-stage work: implementation stages, migration steps, compatibility, dependencies, and verification per stage. Read this doctrine BEFORE ordering multi-stage work or trading a capability against a constraint."
-user-invocable: false
 ---
 
 ## Responsibility

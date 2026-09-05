@@ -1,7 +1,6 @@
 ---
 name: human-facing-output
 description: "Wording a person will read, including a reply to the owner: reports, errors, help text, labels, comments, documentation prose; writing, editing, translating, or reviewing Korean, in a reply or in any artifact a person will read; anything a person sees while using the system: UI, CLI output, help, prompts, errors, status; localization, translation, time zones, date and number formatting, sorting, or cross-locale behavior; log lines, failure diagnostics, severity levels, or operational observability output; or visual or interaction design, information architecture, onboarding, navigation, or cultural fit. Read this doctrine BEFORE writing anything a person will read, in a reply or in any artifact."
-user-invocable: false
 ---
 
 ## Responsibility

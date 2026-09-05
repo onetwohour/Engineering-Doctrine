@@ -1,7 +1,6 @@
 ---
 name: verification-and-evidence
 description: Designing, writing, changing, running, or reviewing tests or coverage; claiming a fix works, or gathering the evidence that a change is correct and introduced no regression; investigating, measuring, optimizing, benchmarking, or claiming anything about performance; compiler, formatter, lint, typecheck, sanitizer, fuzz, or static-analysis findings, including any about to be ignored; or code, tests, or measurements contradicting a claim, request, or prior assumption. Read this doctrine BEFORE running or writing tests, claiming a fix works, or citing any measurement.
-user-invocable: false
 ---
 
 ## Responsibility

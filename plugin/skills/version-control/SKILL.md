@@ -1,7 +1,6 @@
 ---
 name: version-control
 description: "Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history. Read this doctrine BEFORE running git: staging, committing, branching, or touching history."
-user-invocable: false
 ---
 
 ## Responsibility

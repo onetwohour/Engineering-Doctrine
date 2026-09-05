@@ -1,7 +1,6 @@
 ---
 name: mutation-safety
 description: Editing, creating, replacing, moving, or deleting any file, configuration, data, scratch file, or generated output on disk, by Edit, Write, or a shell command. Read this doctrine BEFORE the first edit, creation, move, or deletion of a file by any tool, even one line.
-user-invocable: false
 ---
 
 ## Responsibility

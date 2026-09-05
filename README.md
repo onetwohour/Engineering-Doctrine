@@ -65,7 +65,7 @@ Claude Code lists every skill's name and description in the model's context, but
 
 Check with `/context` (the Skills row shows the listing as the model receives it) and `/doctor` (the listing's cost and its biggest contributors). If the listing is over budget, raise it in `settings.json` with `"skillListingBudgetFraction": 0.02`, or set skills you do not need to `"name-only"` in `skillOverrides`.
 
-After context compaction, Claude Code re-attaches the text of each invoked skill within a budget, so a doctrine skill loaded earlier in the session stays available. A skill that was never loaded still has to be loaded when its moment comes.
+After context compaction, Claude Code re-attaches each invoked skill, keeping the first 5,000 tokens of each within a combined 25,000-token budget and filling from the most recently invoked. Every doctrine skill fits the per-skill limit, but all twelve together come to roughly 26,800 tokens, so a session that loads most of them can lose the earliest-invoked ones. Invoke a skill again to restore it, by name if you want to force it: `/engineering-doctrine:mutation-safety`.
 
 ## License
 

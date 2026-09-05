@@ -1,7 +1,6 @@
 ---
 name: task-continuity
 description: Long or multi-stage work where delegation and accumulated state make attention management matter; a failed attempt, work that looks blocked, or an approach that keeps failing; deciding whether to record durable task state that must survive context loss; returning after a break, restart, or context loss, or finding changes you cannot explain; imminent or just-completed context compaction; or an owner-stated limit on tokens, time, tool calls, cost, or other execution resources. Read this doctrine BEFORE continuing long work after failure, a break, or compaction, or under a budget.
-user-invocable: false
 ---
 
 ## Responsibility

@@ -1,7 +1,6 @@
 ---
 name: external-surface-contracts
 description: "Reading or writing external data: files, network, config, subprocess output, IPC, serialized formats, model output; auth, permissions, secrets, crypto, untrusted paths, uploads, subprocess execution, or privileged operations; user-owned, personal, or sensitive data that is stored, transmitted, logged, cached, exported, retained, or deleted; changing a running or deployed system where a code revert alone would not undo the effects; or adding, upgrading, or removing a dependency, or touching a manifest, lockfile, vendored or generated state. Read this doctrine BEFORE touching external data, auth, secrets, user data, dependencies, or a live system."
-user-invocable: false
 ---
 
 ## Responsibility

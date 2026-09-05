@@ -1,7 +1,6 @@
 ---
 name: artifact-nativeness
 description: "Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media. Read this doctrine BEFORE creating or materially changing anything authored."
-user-invocable: false
 ---
 
 ## Responsibility

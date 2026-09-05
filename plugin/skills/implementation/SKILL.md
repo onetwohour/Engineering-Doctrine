@@ -1,7 +1,6 @@
 ---
 name: implementation
 description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource; or adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist. Read this doctrine BEFORE writing or changing executable behavior, configuration, or data handling.
-user-invocable: false
 ---
 
 ## Responsibility

@@ -1,7 +1,6 @@
 ---
 name: design-before-implementation
 description: Tracing a bug, failure, or unexpected behavior to its actual cause and entry point; working out what owns which state, with its invariants, lifecycle, boundaries, and failure semantics; choosing a domain model, ownership, contract, abstraction, or architecture before writing code; adding a branch, flag, mode, setting, exception, special case, magic value, or hardcoded path; moving code between components, changing dependency direction, or widening a contract; or refactoring, consolidating duplicated authority, or deleting an obsolete path. Read this doctrine BEFORE settling a cause, ownership, contract, flag, special case, move, or refactor.
-user-invocable: false
 ---
 
 ## Responsibility

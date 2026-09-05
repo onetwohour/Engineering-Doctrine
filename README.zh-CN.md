@@ -65,7 +65,7 @@ Claude Code 会把每个技能的名称和描述放进模型上下文，但这�
 
 用 `/context`（Skills 行显示模型实际收到的列表大小）和 `/doctor`（列表成本及其最大贡献者）检查。如果超出预算，在 `settings.json` 中设置 `"skillListingBudgetFraction": 0.02` 提高预算，或在 `skillOverrides` 中把不需要的技能设为 `"name-only"`。
 
-上下文压缩后，Claude Code 会在预算内重新附加已调用技能的正文，所以会话早期加载过的 doctrine 技能会保留下来；从未加载过的技能仍需在相应时机加载。
+上下文压缩后，Claude Code 会重新附加已调用的技能：每个技能保留前 5,000 token，总预算 25,000 token，从最近调用的开始填充。每个 doctrine 技能都在单技能上限内，但 12 个加起来约 26,800 token，因此在加载了大部分技能的会话中，最早调用的可能被丢弃。重新调用即可恢复，也可以按名称强制加载，例如 `/engineering-doctrine:mutation-safety`。
 
 ## 许可证
 

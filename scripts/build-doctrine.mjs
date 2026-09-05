@@ -73,7 +73,7 @@ function compileDoctrine(src,runtimeSource){
     const labels=skill.routes.map(sig=>{const value=cue(parsed.tax,sig);if(!value)throw new Error("missing discovery cue "+sig);return value.replace(/[.;]+$/,"");});
     skill.description=capitalize(joinAlternatives(labels))+". Read this doctrine BEFORE "+skill.moment.replace(/[.;]+$/,"")+".";
     if(skill.description.length>MAX_SKILL_DESCRIPTION_CHARS)throw new Error(skill.name+": generated description "+skill.description.length+" > "+MAX_SKILL_DESCRIPTION_CHARS);
-    const body=["---","name: "+skill.name,"description: "+yaml(skill.description),"user-invocable: false","---","","## Responsibility","",skill.summary,"","Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.",""];
+    const body=["---","name: "+skill.name,"description: "+yaml(skill.description),"---","","## Responsibility","",skill.summary,"","Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.",""];
     let current=null;
     for(const r of skill.rules){const key=signal(r.applies);if(key!==current){current=key;body.push("**Cue: "+capitalize(cue(parsed.tax,key).replace(/[.;]+$/,""))+".** Canonical trigger: "+app(parsed.tax,key).replace(/[.;]+$/,"")+".","");}body.push(renderRule(r,parsed.byId).trimEnd(),"");}
     files.set("plugin/skills/"+skill.name+"/SKILL.md",body.join("\n"));

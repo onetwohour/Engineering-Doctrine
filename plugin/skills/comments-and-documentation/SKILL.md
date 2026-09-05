@@ -1,7 +1,6 @@
 ---
 name: comments-and-documentation
 description: Writing, expanding, or reviewing a source comment, docstring, or API documentation comment; or writing or updating a README, architecture note, runbook, guide, changelog, or other permanent or generated documentation. Read this doctrine BEFORE writing or reviewing a comment, docstring, README, runbook, or changelog.
-user-invocable: false
 ---
 
 ## Responsibility
