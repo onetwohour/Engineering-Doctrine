@@ -23,6 +23,7 @@ const UNREADABLE_STATE = 'The session transcript could not be read, so nothing i
 
 const FAILURE_CHECKPOINT = toolName => `The preceding ${toolName || 'tool'} attempt failed. Under Engineering Doctrine, failure is evidence rather than an automatic classification. Before repeating or working around it, reassess which moment the next action enters; condition:execution-friction or condition:evidence-conflict may now apply, but only if the current evidence supports them. Load newly applicable doctrine content before choosing the next approach.`;
 const MUTATION_DENIAL = (toolName, requires) => `Engineering Doctrine: ${toolName} performs a persistent mutation, so condition:mutation applies by definition rather than by judgment, and ${requires} is not in context. Invoke it with the Skill tool, together with the skill for any other moment this action enters (routing table in the doctrine kernel), then retry this edit.`;
+const MUTATION_DENIAL_UNDELIVERED = (toolName, requires) => `Engineering Doctrine: ${toolName} performs a persistent mutation, and ${requires} was invoked earlier but its rules were never handed over, so they have not been in this session at all. Invoke it again with the Skill tool, confirm its rules are actually in front of you, then retry this edit.`;
 
 function readStdinJson() {
   const raw = fs.readFileSync(0, 'utf8').trim();
@@ -63,7 +64,15 @@ function loadManifest() {
   const prefix = `${PLUGIN_NAME}:`;
   const floorSkill = floor.requires.startsWith(prefix) ? floor.requires.slice(prefix.length) : floor.requires;
   if (!names.includes(floorSkill)) throw new Error(`mutation floor names an unknown skill ${floor.requires}`);
-  return { names, floorSkill, floorRequires: floor.requires, floorTools: floor.tools };
+  // Each skill's own summary is the fingerprint of its delivered body. It is plugin-owned text, so
+  // matching on it survives changes to how the harness frames a skill it hands over.
+  const summaries = new Map();
+  for (const name of names) {
+    const summary = manifest.skills[name] && manifest.skills[name].discoverySummary;
+    if (typeof summary !== 'string' || !summary.trim()) throw new Error(`skill ${name} has no discovery summary to fingerprint`);
+    summaries.set(name, summary.trim());
+  }
+  return { names, summaries, floorSkill, floorRequires: floor.requires, floorTools: floor.tools };
 }
 
 // Everything below derives from the session transcript on each call; the runtime keeps no state of
@@ -102,16 +111,59 @@ function collectSkillCalls(node, out) {
   for (const value of Object.values(node)) collectSkillCalls(value, out);
 }
 
-function loadedSkills(records) {
-  const loaded = new Set();
-  for (const record of records) collectSkillCalls(record, loaded);
-  return loaded;
+function invokedSkills(records) {
+  const invoked = new Set();
+  for (const record of records) collectSkillCalls(record, invoked);
+  return invoked;
 }
 
-function describeState(invoked, names, caveat) {
-  const seen = names.filter(name => invoked.has(name));
-  const never = names.filter(name => !invoked.has(name));
-  return `Doctrine skills invoked at some point this session: ${seen.length ? seen.join(', ') : 'none'}. Never invoked: ${never.length ? never.join(', ') : 'none'}. ${caveat}`;
+// A skill's rules arrive as a plain text block, while tool output arrives as a tool_result, so only
+// text blocks count as delivery. Measured across this project's sessions, roughly three percent of
+// first invocations were acknowledged and then never handed over; counting the call rather than the
+// hand-over reported those skills as available when none of their rules had arrived.
+//
+// Two independent fingerprints, because each fails where the other holds. The summary is plugin-owned
+// and survives a change to how the harness frames a delivered skill, but it stops matching a body
+// delivered by an earlier build once the doctrine edits that summary. The harness preamble names the
+// skill's own directory and is indifferent to doctrine edits, but it is the harness's wording to
+// change. A body matching either one was delivered.
+const DELIVERY_PREAMBLE = 'Base directory for this skill';
+function collectDeliveredText(node, out) {
+  if (Array.isArray(node)) {
+    for (const item of node) collectDeliveredText(item, out);
+    return;
+  }
+  if (!node || typeof node !== 'object') return;
+  if (node.type === 'text' && typeof node.text === 'string') out.push(node.text);
+  for (const value of Object.values(node)) collectDeliveredText(value, out);
+}
+
+function deliveredSkills(records, summaries) {
+  const blocks = [];
+  for (const record of records) collectDeliveredText(record, blocks);
+  const preambles = blocks.filter(text => text.includes(DELIVERY_PREAMBLE));
+  const delivered = new Set();
+  for (const [name, summary] of summaries) {
+    const named = new RegExp(`[\\\\/]${name}(?:[\\\\/\\s]|$)`, 'm');
+    if (blocks.some(text => text.includes(summary)) || preambles.some(text => named.test(text))) delivered.add(name);
+  }
+  return delivered;
+}
+
+// A detector that finds no delivery at all while skills were invoked is more likely broken than
+// right, so the caller falls back to invocation rather than blocking every edit on a bad signal.
+function deliveryLooksReliable(invoked, delivered) {
+  return invoked.size === 0 || delivered.size > 0;
+}
+
+function describeState(invoked, delivered, names, caveat) {
+  const got = names.filter(name => delivered.has(name));
+  const undelivered = names.filter(name => invoked.has(name) && !delivered.has(name));
+  const never = names.filter(name => !invoked.has(name) && !delivered.has(name));
+  const lost = undelivered.length
+    ? ` Invoked but never handed over, so their rules have not been in this session at all — invoke again before relying on them: ${undelivered.join(', ')}.`
+    : '';
+  return `Doctrine skills whose rules were delivered this session: ${got.length ? got.join(', ') : 'none'}.${lost} Never invoked: ${never.length ? never.join(', ') : 'none'}. ${caveat}`;
 }
 
 // The last batch report this runtime wrote, as recorded in the transcript, and how many assistant
@@ -153,7 +205,7 @@ function batchFacts(calls) {
 
 function handlePrompt(input, manifest) {
   const records = transcriptRecords(String(input.transcript_path || ''));
-  const state = records ? describeState(loadedSkills(records), manifest.names, PRESENCE_CAVEAT) : UNREADABLE_STATE;
+  const state = records ? describeState(invokedSkills(records), deliveredSkills(records, manifest.summaries), manifest.names, PRESENCE_CAVEAT) : UNREADABLE_STATE;
   emit('UserPromptSubmit', `${state} Before the first substantive action on this prompt, find the moment it enters in the routing table of the doctrine kernel and load that skill; a reply to the owner is covered work. ${manifest.floorTools.join(', ')} are denied until ${manifest.floorRequires} is loaded.`);
 }
 
@@ -165,8 +217,18 @@ function handleMutationGate(input, manifest) {
     process.stderr.write(`Engineering Doctrine: could not read the session transcript, so the ${manifest.floorRequires} gate did not run for ${toolName}.\n`);
     return;
   }
-  if (loadedSkills(records).has(manifest.floorSkill)) return;
-  deny(MUTATION_DENIAL(toolName, manifest.floorRequires));
+  const invoked = invokedSkills(records);
+  const delivered = deliveredSkills(records, manifest.summaries);
+  if (!deliveryLooksReliable(invoked, delivered)) {
+    process.stderr.write(`Engineering Doctrine: ${invoked.size} skill invocations are recorded but no delivery could be detected, so the ${manifest.floorRequires} gate fell back to invocation for ${toolName}.\n`);
+    if (invoked.has(manifest.floorSkill)) return;
+    deny(MUTATION_DENIAL(toolName, manifest.floorRequires));
+    return;
+  }
+  if (delivered.has(manifest.floorSkill)) return;
+  deny(invoked.has(manifest.floorSkill)
+    ? MUTATION_DENIAL_UNDELIVERED(toolName, manifest.floorRequires)
+    : MUTATION_DENIAL(toolName, manifest.floorRequires));
 }
 
 function handleBatch(input, manifest) {
@@ -174,15 +236,16 @@ function handleBatch(input, manifest) {
   const facts = batchFacts(calls);
   if (!facts.acted) return;
   const records = transcriptRecords(String(input.transcript_path || ''));
-  const invoked = records ? loadedSkills(records) : new Set();
-  const signature = `invoked=${manifest.names.filter(name => invoked.has(name)).join(',')};tools=${[...facts.counts.keys()].sort().join(',')};git=${facts.git.join(',')}`;
+  const invoked = records ? invokedSkills(records) : new Set();
+  const delivered = records ? deliveredSkills(records, manifest.summaries) : new Set();
+  const signature = `delivered=${manifest.names.filter(name => delivered.has(name)).join(',')};pending=${manifest.names.filter(name => invoked.has(name) && !delivered.has(name)).join(',')};tools=${[...facts.counts.keys()].sort().join(',')};git=${facts.git.join(',')}`;
   if (records) {
     const last = lastBatchReport(records);
     if (last.signature === signature && last.turnsSince < REPEAT_AFTER_TURNS) return;
   }
   const tools = [...facts.counts].map(([tool, count]) => (count > 1 ? `${tool}×${count}` : tool)).join(', ');
   const git = facts.git.length ? ` Git: ${facts.git.join(', ')}.` : '';
-  const state = records ? describeState(invoked, manifest.names, PRESENCE_CAVEAT_SHORT) : UNREADABLE_STATE;
+  const state = records ? describeState(invoked, delivered, manifest.names, PRESENCE_CAVEAT_SHORT) : UNREADABLE_STATE;
   emit('PostToolBatch', `Tools this batch: ${tools}.${git} ${state} If the next action enters a different moment, load its skill first; the routing table is in the doctrine kernel. [${STATE_MARKER}${signature}]`);
 }
 

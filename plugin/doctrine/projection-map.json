@@ -2002,12 +2002,15 @@
     },
     "reports": {
       "source": "session transcript",
+      "evidence": "a skill counts as delivered when its discoverySummary appears in a transcript text block; an invocation alone does not",
       "facts": [
-        "doctrine skills invoked",
+        "doctrine skills whose rules were delivered",
+        "skills invoked without delivery",
         "tools used in the batch",
         "git subcommands seen"
       ],
-      "suppressedWhenUnchanged": true
+      "suppressedWhenUnchanged": true,
+      "fallsBackToInvocation": "when no delivery is detectable at all"
     },
     "checkpoints": [
       {
