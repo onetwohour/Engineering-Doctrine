@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "engineering-doctrine",
   "displayName": "Engineering Doctrine",
-  "version": "3.1.0",
-  "description": "Guides Claude Code to trace root causes, establish ownership and invariants, change only what the task requires, verify behavior with evidence, preserve existing work and user data, and review the result before claiming completion.",
+  "version": "1.0.0",
+  "description": "Engineering doctrine with prompt-scoped hard gates, independent semantic change classification, revision-bound verification evidence, architecture/migration governance, and completion enforcement.",
   "author": {
     "name": "Onetwohour"
   },

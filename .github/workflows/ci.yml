@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Check runtime syntax
+        run: node --check scripts/doctrine-runtime.mjs
+      - name: Test policy runtime
+        run: node --test tests/*.test.mjs
+      - name: Check generated projections
+        run: node scripts/build-doctrine.mjs --check

@@ -6,7 +6,7 @@ model: inherit
 skills:
   - engineering-doctrine:design-before-implementation
   - engineering-doctrine:planning
-  - engineering-doctrine:mutation-safety
+  - engineering-doctrine:change-governance
   - engineering-doctrine:implementation
   - engineering-doctrine:artifact-nativeness
   - engineering-doctrine:external-surface-contracts
@@ -15,6 +15,8 @@ skills:
   - engineering-doctrine:documentation
   - engineering-doctrine:version-control
   - engineering-doctrine:task-continuity
+  - engineering-doctrine:agentic-execution
+  - engineering-doctrine:persistent-knowledge
   - engineering-doctrine:completion-and-review
 ---
 

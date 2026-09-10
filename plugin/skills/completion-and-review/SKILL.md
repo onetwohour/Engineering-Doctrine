@@ -1,6 +1,6 @@
 ---
 name: completion-and-review
-description: "Rereading the finished diff before saying the work is done; deciding or claiming that the requested outcome actually exists; or writing the final summary or status: what changed, what was verified, what is still unverified or blocked. Read this doctrine BEFORE saying the work is done, writing the summary, or claiming verification."
+description: "Rereading the finished diff before saying the work is done; deciding or claiming that the requested outcome actually exists; or writing the final summary or status: what changed, what was verified, what is still unverified or blocked. Read this doctrine BEFORE finalizing work or claiming completion."
 ---
 
 ## Responsibility

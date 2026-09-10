@@ -1,6 +1,6 @@
 ---
 name: documentation
-description: Writing or updating a README, architecture note, runbook, guide, changelog, or an agent instruction file such as CLAUDE.md or a scoped rule. Read this doctrine BEFORE writing or reviewing a README, runbook, guide, changelog, or instruction file.
+description: Writing or updating a README, architecture note, runbook, guide, changelog, or an agent instruction file such as CLAUDE.md or a scoped rule. Read this doctrine BEFORE writing or reviewing project documentation or instructions.
 ---
 
 ## Responsibility

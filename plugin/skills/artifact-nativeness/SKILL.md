@@ -1,6 +1,6 @@
 ---
 name: artifact-nativeness
-description: "Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media. Read this doctrine BEFORE creating or materially changing anything authored."
+description: "Creating or materially changing an authored artifact: code, tests, UI, prose, documentation, plans, reports, or generated media. Read this doctrine BEFORE creating or materially changing anything authored."
 ---
 
 ## Responsibility
@@ -9,7 +9,7 @@ Keeps authored artifacts grounded in the actual project, domain, audience, mediu
 
 Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
 
-**Cue: Creating or materially changing anything authored: code, tests, UI, prose, documentation, plans, reports, or generated media.** Canonical trigger: creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts.
+**Cue: Creating or materially changing an authored artifact: code, tests, UI, prose, documentation, plans, reports, or generated media.** Canonical trigger: creating or materially changing code, architecture, tests, UI, language, documentation, plans, reports, or other authored artifacts.
 
 ### 3.6 Artifact nativeness; no generative residue
 

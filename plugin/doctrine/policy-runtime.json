@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "stateProtocol": 4,
+  "policyProtocol": 1,
+  "policyAgent": "doctrine-policy-verifier",
+  "executionAgent": "doctrine-engineer",
+  "canonicalMutationSkill": "change-governance",
+  "verificationKinds": [
+    "test",
+    "lint",
+    "typecheck",
+    "build",
+    "static-analysis"
+  ],
+  "scope": {
+    "pathAwareWrites": "checked against PRE_CHANGE literal prefixes and repository real-path containment",
+    "opaqueShellMutation": "requires repository-wide . scope"
+  },
+  "verification": {
+    "compoundShellCommands": "never accepted as automatic verification evidence",
+    "mutationFlags": "never accepted as automatic verification evidence",
+    "completionBinding": "reviewRevision and verificationRevision"
+  },
+  "state": {
+    "serialization": "session-scoped lock plus atomic JSON replacement",
+    "verifierSnapshotBinding": true
+  }
+}

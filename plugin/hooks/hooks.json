@@ -1,5 +1,5 @@
 {
-  "description": "Loads the Engineering Doctrine governing kernel, reports doctrine state (which skills' rules were actually delivered, which were invoked without delivery, tools used) at native decision points, and holds a mechanical floor under persistent edits. Hooks never classify applicability; the only block is the mutation floor.",
+  "description": "Loads the governing kernel and enforces a two-layer policy engine: deterministic tool/state gates plus an independent read-only semantic verifier for change classification, scope, verification adequacy, and completion.",
   "hooks": {
     "SessionStart": [
       {
@@ -48,16 +48,47 @@
         ]
       }
     ],
-    "PreToolUse": [
+    "UserPromptExpansion": [
       {
-        "matcher": "Edit|Write|NotebookEdit",
         "hooks": [
           {
             "type": "command",
             "command": "node",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "pre-mutation"
+              "skill-expansion"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash|PowerShell|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "pre-tool"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash|PowerShell|Skill|Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "post-tool"
             ],
             "timeout": 5
           }
@@ -80,7 +111,7 @@
         ]
       }
     ],
-    "PostToolBatch": [
+    "TaskCompleted": [
       {
         "hooks": [
           {
@@ -88,7 +119,38 @@
             "command": "node",
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "batch"
+              "task-completed"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "stop"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
+              "subagent-stop"
             ],
             "timeout": 5
           }

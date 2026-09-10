@@ -1,6 +1,6 @@
 ---
 name: implementation
-description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource; adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist; or writing, expanding, or reviewing a source comment, docstring, or API documentation comment. Read this doctrine BEFORE writing or changing code, configuration, or data handling, and any comment in it.
+description: Writing or changing executable behavior, configuration, or data handling, including one-line and trivial edits, or code that acquires a resource; adding a new type, module, helper, service, adapter, validator, error type, config mechanism, or abstraction that may already exist; or writing, expanding, or reviewing a source comment, docstring, or API documentation comment. Read this doctrine BEFORE writing code, configuration, data handling, or source comments.
 ---
 
 ## Responsibility
