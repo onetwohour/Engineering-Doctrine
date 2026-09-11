@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "engineering-doctrine",
   "displayName": "Engineering Doctrine",
-  "version": "1.0.0",
-  "description": "Engineering doctrine with prompt-scoped hard gates, independent semantic change classification, revision-bound verification evidence, architecture/migration governance, and completion enforcement.",
+  "version": "1.0.1",
+  "description": "Engineering doctrine with advisory policy routing, evidence tracking, architecture/migration governance, and optional independent semantic review without tool or completion blocking.",
   "author": {
     "name": "Onetwohour"
   },

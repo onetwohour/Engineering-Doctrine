@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "generated": true,
   "packageRoot": "plugin",
   "canonicalRepositoryPath": "doctrine/ENGINEERING_DOCTRINE.md",
@@ -2187,16 +2187,15 @@
     "routeSource": "taxonomy.skillCatalog",
     "persistentRoutingState": false,
     "classifies": false,
-    "blocking": {
+    "routing": {
       "scope": "condition:mutation",
       "tools": [
         "Edit",
         "Write",
         "NotebookEdit"
       ],
-      "requires": "engineering-doctrine:change-governance",
-      "evidence": "session transcript",
-      "opensWhenUnprovable": true
+      "recommends": "engineering-doctrine:change-governance",
+      "evidence": "session transcript"
     },
     "reports": {
       "source": "session transcript",
@@ -2217,7 +2216,7 @@
       },
       {
         "event": "PreToolUse",
-        "purpose": "mechanical mutation floor"
+        "purpose": "skill routing, effect classification, and scope-drift observation"
       },
       {
         "event": "PostToolBatch",

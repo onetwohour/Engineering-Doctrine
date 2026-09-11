@@ -6,9 +6,10 @@ import { fileURLToPath } from 'node:url';
 const PLUGIN_NAME = 'engineering-doctrine';
 const POLICY_AGENT = `${PLUGIN_NAME}:doctrine-policy-verifier`;
 const POLICY_PROTOCOL = 1;
-const STATE_PROTOCOL = 4;
+const STATE_PROTOCOL = 5;
 const runtimeDir = path.dirname(fileURLToPath(import.meta.url));
-const pluginRoot = path.resolve(runtimeDir, '..');
+const sourceTreePluginRoot = path.resolve(runtimeDir, '..', 'plugin');
+const pluginRoot = fs.existsSync(sourceTreePluginRoot) ? sourceTreePluginRoot : path.resolve(runtimeDir, '..');
 const projectionMapPath = path.join(pluginRoot, 'doctrine', 'projection-map.json');
 
 const WRITE_TOOLS = new Set(['Edit', 'Write', 'NotebookEdit']);
@@ -16,9 +17,14 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell']);
 const AGENT_TOOLS = new Set(['Agent']);
 const INSPECTION_TOOLS = new Set(['Read', 'Grep', 'Glob', 'Bash', 'PowerShell']);
 const TRACKABLE_VERIFICATION_KINDS = new Set(['test', 'lint', 'typecheck', 'build', 'static-analysis']);
+const READ_ONLY_GIT = new Set([
+  'status', 'log', 'show', 'grep', 'rev-parse', 'ls-files', 'diff', 'branch',
+  'cat-file', 'ls-tree', 'merge-base', 'name-rev', 'describe', 'remote', 'config',
+]);
 const DELIVERY_PREAMBLE = 'Base directory for this skill';
 const LOCK_WAIT_MS = 3500;
 const LOCK_STALE_MS = 15000;
+const MAX_ADVISORIES = 100;
 const sleepCell = new Int32Array(new SharedArrayBuffer(4));
 
 const DOC_BASENAMES = new Set([
@@ -65,20 +71,6 @@ function staticAdditionalContext(name) {
   } catch {
     return '';
   }
-}
-
-function deny(reason) {
-  process.stdout.write(`${JSON.stringify({
-    hookSpecificOutput: {
-      hookEventName: 'PreToolUse',
-      permissionDecision: 'deny',
-      permissionDecisionReason: reason,
-    },
-  })}\n`);
-}
-
-function blockStop(reason) {
-  process.stdout.write(`${JSON.stringify({ decision: 'block', reason })}\n`);
 }
 
 function loadManifest() {
@@ -214,6 +206,7 @@ function defaultState(input) {
     mutations: [],
     verifications: [],
     failures: [],
+    advisories: [],
     preflight: null,
     completion: null,
     verifierSnapshots: {},
@@ -229,6 +222,7 @@ function normalizeState(state) {
   if (!Array.isArray(state.mutations)) state.mutations = [];
   if (!Array.isArray(state.verifications)) state.verifications = [];
   if (!Array.isArray(state.failures)) state.failures = [];
+  if (!Array.isArray(state.advisories)) state.advisories = [];
   state.protocolVersion = STATE_PROTOCOL;
   return state;
 }
@@ -394,10 +388,116 @@ function hasShellControlSyntax(command) {
   return /[\n\r;&|<>`]|\$\(/.test(command);
 }
 
+function splitShellSegments(command) {
+  const segments = [];
+  let current = '';
+  let quote = null;
+  let escaped = false;
+
+  for (let i = 0; i < command.length; i++) {
+    const ch = command[i];
+    if (escaped) {
+      current += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\' && quote !== "'") {
+      current += ch;
+      escaped = true;
+      continue;
+    }
+    if (quote) {
+      current += ch;
+      if (ch === quote) quote = null;
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      current += ch;
+      quote = ch;
+      continue;
+    }
+    if (ch === ';' || ch === '&' || ch === '|' || ch === '\n' || ch === '\r') {
+      if (current.trim()) segments.push(current.trim());
+      current = '';
+      continue;
+    }
+    current += ch;
+  }
+  if (quote || escaped) return null;
+  if (current.trim()) segments.push(current.trim());
+  return segments;
+}
+
+function shellWords(segment) {
+  const words = [];
+  let current = '';
+  let quote = null;
+  let escaped = false;
+
+  const push = () => {
+    if (current.length) words.push(current);
+    current = '';
+  };
+
+  for (let i = 0; i < segment.length; i++) {
+    const ch = segment[i];
+    if (escaped) {
+      current += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\' && quote !== "'") {
+      escaped = true;
+      continue;
+    }
+    if (quote) {
+      if (ch === quote) quote = null;
+      else current += ch;
+      continue;
+    }
+    if (ch === "'" || ch === '"') {
+      quote = ch;
+      continue;
+    }
+    if (/\s/.test(ch)) {
+      push();
+      continue;
+    }
+    current += ch;
+  }
+  if (quote || escaped) return null;
+  push();
+  return words;
+}
+
+function gitSubcommandFromWords(words) {
+  if (!Array.isArray(words) || !words.length) return null;
+  const executable = path.basename(words[0]).toLowerCase();
+  if (executable !== 'git' && executable !== 'git.exe') return null;
+
+  const valueOptions = new Set([
+    '-C', '-c', '--git-dir', '--work-tree', '--namespace', '--super-prefix',
+    '--config-env', '--attr-source', '--exec-path',
+  ]);
+  for (let i = 1; i < words.length; i++) {
+    const word = words[i];
+    if (word === '--') continue;
+    if (!word.startsWith('-')) return word.toLowerCase();
+
+    const option = word.includes('=') ? word.slice(0, word.indexOf('=')) : word;
+    if (valueOptions.has(option) && !word.includes('=')) i += 1;
+  }
+  return null;
+}
+
 function gitSubcommands(command) {
+  const segments = splitShellSegments(command);
+  if (!segments) return [];
   const out = [];
-  const regex = /(?:^|[;&|\n]\s*)git(?:\s+-\S+(?:\s+\S+)*)*\s+([a-z-]+)\b/gi;
-  for (const match of command.matchAll(regex)) out.push(match[1].toLowerCase());
+  for (const segment of segments) {
+    const subcommand = gitSubcommandFromWords(shellWords(segment));
+    if (subcommand) out.push(subcommand);
+  }
   return out;
 }
 
@@ -415,9 +515,10 @@ function gitWorkingTreeMutation(command) {
 }
 
 function gitMetadataOnly(command) {
-  if (hasShellControlSyntax(command)) return false;
   const subs = gitSubcommands(command);
-  return subs.length === 1 && GIT_METADATA_ONLY.has(subs[0]);
+  if (!subs.length) return false;
+  const hasMetadataMutation = subs.some(subcommand => GIT_METADATA_ONLY.has(subcommand));
+  return hasMetadataMutation && subs.every(subcommand => GIT_METADATA_ONLY.has(subcommand) || READ_ONLY_GIT.has(subcommand));
 }
 
 function dependencyCommand(command) {
@@ -456,39 +557,69 @@ function verificationCommand(command) {
   return verificationKind(command) !== null;
 }
 
-function shellKnownReadOnly(command) {
-  const trimmed = command.trim();
+function simpleCommandKnownReadOnly(segment) {
+  const trimmed = segment.trim();
   if (!trimmed) return true;
-  if (hasShellControlSyntax(trimmed)) return false;
+  if (/[>`]|\$\(|`/.test(trimmed) || /(?:^|\s)(?:-delete|-exec|-execdir)(?:\s|$)/i.test(trimmed)) return false;
   if (verificationCommand(trimmed)) return true;
-  if (/[$()]/.test(trimmed) || /(?:^|\s)(?:-delete|-exec|-execdir)(?:\s|$)/i.test(trimmed)) return false;
+
+  const gitSubs = gitSubcommands(trimmed);
+  if (gitSubs.length === 1 && READ_ONLY_GIT.has(gitSubs[0])) {
+    if (gitSubs[0] === 'branch') return /(?:^|\s)--show-current(?:\s|$)/.test(trimmed);
+    if (gitSubs[0] === 'config') return /(?:^|\s)(?:--get|--get-all|--get-regexp|--list|-l)(?:\s|$)/.test(trimmed);
+    return true;
+  }
+
   const patterns = [
-    /^(?:pwd|ls|dir)(?:\s+[^;&|\n]+)*$/i,
-    /^(?:cat|head|tail|wc|stat|file|realpath|readlink|which|where(?:\.exe)?)(?:\s+[^;&|\n]+)+$/i,
-    /^(?:grep|rg)(?:\s+[^;&|\n]+)+$/i,
-    /^git\s+(?:status|log|show|grep|rev-parse|ls-files|diff)(?:\s+[^;&|\n]+)*$/i,
-    /^git\s+branch\s+--show-current$/i,
+    /^(?:pwd|ls|dir|true|false)(?:\s+[^;&|\n]+)*$/i,
+    /^(?:cd|pushd|popd)(?:\s+[^;&|\n]+)*$/i,
+    /^(?:cat|head|tail|wc|stat|file|realpath|readlink|which|where(?:\.exe)?|du|tree)(?:\s+[^;&|\n]+)*$/i,
+    /^(?:grep|rg|find|jq|awk|cut|sort|uniq)(?:\s+[^;&|\n]+)+$/i,
+    /^(?:echo|printf)(?:\s+[^;&|\n]+)*$/i,
     /^(?:node|deno|bun|python|python3|ruby|go|cargo|rustc|java|javac|dotnet)\s+(?:--version|-V|version)$/i,
     /^(?:npm|pnpm|yarn|bun)\s+(?:list|ls|why|view|info)(?:\s+[^;&|\n]+)*$/i,
   ];
   return patterns.some(pattern => pattern.test(trimmed));
 }
 
-function shellPersistentMutation(command) {
+function shellKnownReadOnly(command) {
   const trimmed = command.trim();
-  if (!trimmed) return false;
-  if (hasShellControlSyntax(trimmed)) return true;
-  if (gitMutation(trimmed) || dependencyCommand(trimmed) || verificationMutationFlag(trimmed)) return true;
+  if (!trimmed) return true;
+  if (/\$\(|`/.test(trimmed)) return false;
+  const segments = splitShellSegments(trimmed);
+  return Boolean(segments?.length) && segments.every(simpleCommandKnownReadOnly);
+}
 
-  const patterns = [
-    /^(?:rm|mv|cp|mkdir|rmdir|touch|truncate|install|patch|dd|tee|chmod|chown|ln)\b/i,
+function shellEffect(command) {
+  const trimmed = command.trim();
+  if (!trimmed) return 'READ_ONLY';
+  if (verificationMutationFlag(trimmed) || gitMutation(trimmed) || dependencyCommand(trimmed)) return 'MUTATION';
+
+  const mutationPatterns = [
+    /(?:^|[;&|\n]\s*)(?:rm|mv|cp|mkdir|rmdir|touch|truncate|install|patch|dd|tee|chmod|chown|ln)\b/i,
     /\bsed\b[^\n;&|]*\s-i(?:\b|['"]?)/i,
     /\bperl\b[^\n;&|]*\s-pi(?:\b|['"]?)/i,
     /\b(?:npm|pnpm|yarn|bun)\s+run\s+(?:format|fmt|generate|codegen|fix)\b/i,
     /\b(?:prettier|eslint|ruff|biome)\b[^\n;&|]*(?:--write|--fix)\b/i,
   ];
-  if (patterns.some(pattern => pattern.test(trimmed))) return true;
-  return !shellKnownReadOnly(trimmed);
+  if (mutationPatterns.some(pattern => pattern.test(trimmed))) return 'MUTATION';
+
+  let quote = null;
+  let escaped = false;
+  for (const ch of trimmed) {
+    if (escaped) { escaped = false; continue; }
+    if (ch === '\\' && quote !== "'") { escaped = true; continue; }
+    if (quote) { if (ch === quote) quote = null; continue; }
+    if (ch === "'" || ch === '"') { quote = ch; continue; }
+    if (ch === '>') return 'MUTATION';
+  }
+
+  if (shellKnownReadOnly(trimmed)) return 'READ_ONLY';
+  return 'UNKNOWN';
+}
+
+function shellPersistentMutation(command) {
+  return shellEffect(command) === 'MUTATION';
 }
 
 function isPolicyAgentInput(toolInput) {
@@ -502,74 +633,61 @@ function isPolicyAgentType(agentType) {
 }
 
 function verifierSafeShell(command) {
-  const trimmed = command.trim();
-  if (!trimmed || hasShellControlSyntax(trimmed) || /[$()]/.test(trimmed)) return false;
-  const allowed = [
-    /^git\s+status\s+--porcelain(?:=v1)?(?:\s+-uno)?$/i,
-    /^git\s+rev-parse\s+--show-toplevel$/i,
-    /^git\s+ls-files(?:\s+--\s+.+)?$/i,
-    /^git\s+diff\s+(?=.*--no-ext-diff)(?=.*--no-textconv)[A-Za-z0-9_./=:+,@%~^\-\s]*$/i,
-  ];
-  return allowed.some(pattern => pattern.test(trimmed));
+  return shellEffect(command) === 'READ_ONLY';
 }
 
 function unique(items) {
   return [...new Set(items)];
 }
 
-function requiredByPreflight(preflight, manifest) {
-  if (!preflight || preflight.status !== 'ALLOW') return [];
-  const required = ['change-governance', 'implementation'];
+function skillsFromPreflight(preflight, manifest) {
+  if (!preflight) return [];
+  const applicable = [];
   if (preflight.mode === 'BOOTSTRAP' || preflight.mode === 'ARCHITECTURE_CHANGE') {
-    required.push('design-before-implementation', 'planning', 'verification-and-evidence');
+    applicable.push('design-before-implementation', 'planning');
   }
-  if (preflight.migration) required.push('planning', 'verification-and-evidence');
-  for (const name of preflight.required_skills || []) {
-    if (manifest.names.includes(name)) required.push(name);
+  if (preflight.migration) applicable.push('planning');
+  for (const name of preflight.applicable_skills || preflight.required_skills || []) {
+    if (manifest.names.includes(name)) applicable.push(name);
   }
-  return unique(required);
+  return unique(applicable);
 }
 
-function requirementsForTool(toolName, toolInput, manifest, preflight = null) {
-  const required = [];
+function applicableSkillsForTool(toolName, toolInput, manifest, preflight = null) {
+  const applicable = [];
 
   if (WRITE_TOOLS.has(toolName)) {
-    required.push(...requiredByPreflight(preflight, manifest));
-    if (!preflight) required.push('change-governance');
+    applicable.push('change-governance', ...skillsFromPreflight(preflight, manifest));
     const filePath = toolPath(toolInput);
-    if (isTestPath(filePath)) required.push('verification-and-evidence');
-    else if (isDocumentationPath(filePath)) required.push('documentation');
-    else required.push('implementation');
-    if (isDependencyPath(filePath)) required.push('external-surface-contracts');
+    if (isTestPath(filePath)) applicable.push('verification-and-evidence');
+    else if (isDocumentationPath(filePath)) applicable.push('documentation');
+    else applicable.push('implementation');
+    if (isDependencyPath(filePath)) applicable.push('external-surface-contracts');
   }
 
   if (SHELL_TOOLS.has(toolName)) {
     const command = shellCommand(toolInput);
-    required.push(...requiredByPreflight(preflight, manifest));
-    if (!preflight && shellPersistentMutation(command)) required.push('change-governance');
-    if (gitMutation(command)) required.push('version-control');
-    if (dependencyCommand(command)) required.push('external-surface-contracts');
-    if (verificationCommand(command)) required.push('verification-and-evidence');
+    if (shellPersistentMutation(command)) applicable.push('change-governance', ...skillsFromPreflight(preflight, manifest));
+    if (gitMutation(command)) applicable.push('version-control');
+    if (dependencyCommand(command)) applicable.push('external-surface-contracts');
+    if (verificationCommand(command)) applicable.push('verification-and-evidence');
   }
 
-  if (AGENT_TOOLS.has(toolName)) {
-    if (isPolicyAgentInput(toolInput)) required.push('change-governance');
-    else required.push('agentic-execution');
-  }
+  if (AGENT_TOOLS.has(toolName) && !isPolicyAgentInput(toolInput)) applicable.push('agentic-execution');
 
-  for (const name of required) {
-    if (!manifest.names.includes(name)) throw new Error(`hard gate names unknown skill ${name}`);
+  for (const name of applicable) {
+    if (!manifest.names.includes(name)) throw new Error(`routing names unknown skill ${name}`);
   }
-  return unique(required);
+  return unique(applicable);
 }
 
-function missingSkills(required, active) {
-  return required.filter(name => !active.has(name));
+function missingSkills(applicable, active) {
+  return applicable.filter(name => !active.has(name));
 }
 
-function gateReason(toolName, missing) {
+function skillAdvisory(toolName, missing) {
   const skills = missing.map(name => `${PLUGIN_NAME}:${name}`).join(', ');
-  return `Engineering Doctrine hard gate: ${toolName} requires ${skills} in the current prompt/context epoch. Invoke every named skill with the Skill tool, then retry the same semantic action. Do not bypass this denial through Bash, another write tool, a subagent, or a different command path.`;
+  return `Relevant doctrine skill${missing.length === 1 ? '' : 's'} for ${toolName}: ${skills}. Load when materially relevant.`;
 }
 
 function relativeProjectPath(cwd, filePath) {
@@ -635,10 +753,10 @@ function exactObjectKeys(value, expected) {
 }
 
 function validatePreflightVerdict(value, manifest) {
-  const keys = ['phase', 'status', 'mode', 'migration', 'confidence', 'scope_roots', 'architecture_reasons', 'blocking_reasons', 'required_skills', 'required_verification_kinds', 'summary'];
+  const keys = ['phase', 'status', 'mode', 'migration', 'confidence', 'scope_roots', 'architecture_reasons', 'concerns', 'applicable_skills', 'recommended_verification_kinds', 'summary'];
   if (!exactObjectKeys(value, keys)) return 'PRE_CHANGE verdict must contain exactly the documented fields';
   if (value.phase !== 'PRE_CHANGE') return 'phase must be PRE_CHANGE';
-  if (!['ALLOW', 'BLOCK'].includes(value.status)) return 'status must be ALLOW or BLOCK';
+  if (!['PASS', 'CONCERNS'].includes(value.status)) return 'status must be PASS or CONCERNS';
   if (!['NORMAL_DEVELOPMENT', 'BOOTSTRAP', 'ARCHITECTURE_CHANGE'].includes(value.mode)) return 'invalid mode';
   if (typeof value.migration !== 'boolean') return 'migration must be boolean';
   if (!['high', 'medium', 'low'].includes(value.confidence)) return 'confidence must be high, medium, or low';
@@ -650,15 +768,14 @@ function validatePreflightVerdict(value, manifest) {
     }
   }
   if (!Array.isArray(value.architecture_reasons) || value.architecture_reasons.some(x => typeof x !== 'string')) return 'architecture_reasons must be a string array';
-  if (!Array.isArray(value.blocking_reasons) || value.blocking_reasons.some(x => typeof x !== 'string')) return 'blocking_reasons must be a string array';
-  if (!Array.isArray(value.required_skills) || value.required_skills.some(x => !manifest.names.includes(x))) return 'required_skills contains an unknown skill';
-  if (!Array.isArray(value.required_verification_kinds) || value.required_verification_kinds.some(x => !TRACKABLE_VERIFICATION_KINDS.has(x))) return 'required_verification_kinds contains an unsupported kind';
+  if (!Array.isArray(value.concerns) || value.concerns.some(x => typeof x !== 'string')) return 'concerns must be a string array';
+  if (!Array.isArray(value.applicable_skills) || value.applicable_skills.some(x => !manifest.names.includes(x))) return 'applicable_skills contains an unknown skill';
+  if (!Array.isArray(value.recommended_verification_kinds) || value.recommended_verification_kinds.some(x => !TRACKABLE_VERIFICATION_KINDS.has(x))) return 'recommended_verification_kinds contains an unsupported kind';
   if (typeof value.summary !== 'string' || !value.summary.trim()) return 'summary is required';
   if (value.migration && value.mode !== 'ARCHITECTURE_CHANGE') return 'migration requires ARCHITECTURE_CHANGE';
-  if (value.status === 'ALLOW' && !value.scope_roots.length) return 'ALLOW requires at least one explicit scope root';
-  if (value.status === 'ALLOW' && (value.confidence === 'low' || value.blocking_reasons.length)) return 'ALLOW cannot carry low confidence or blocking reasons';
-  if (value.status === 'BLOCK' && !value.blocking_reasons.length) return 'BLOCK requires blocking_reasons';
-  if (value.mode !== 'NORMAL_DEVELOPMENT' && value.status === 'ALLOW' && !value.architecture_reasons.length) return 'BOOTSTRAP/ARCHITECTURE_CHANGE ALLOW requires architecture_reasons';
+  if (value.status === 'PASS' && (value.confidence === 'low' || value.concerns.length)) return 'PASS cannot carry low confidence or unresolved concerns';
+  if (value.status === 'CONCERNS' && !value.concerns.length) return 'CONCERNS requires at least one concrete concern';
+  if (value.mode !== 'NORMAL_DEVELOPMENT' && value.status === 'PASS' && !value.architecture_reasons.length) return 'BOOTSTRAP/ARCHITECTURE_CHANGE PASS requires architecture_reasons';
   return null;
 }
 
@@ -670,7 +787,7 @@ function validateCompletionVerdict(value, state) {
   const keys = ['phase', 'status', 'mode_consistent', 'scope_consistent', 'verification_adequate', 'review_adequate', 'claims_bounded', 'evidence_tool_use_ids', 'missing_verification', 'material_findings', 'summary'];
   if (!exactObjectKeys(value, keys)) return 'COMPLETION verdict must contain exactly the documented fields';
   if (value.phase !== 'COMPLETION') return 'phase must be COMPLETION';
-  if (!['ALLOW', 'BLOCK'].includes(value.status)) return 'status must be ALLOW or BLOCK';
+  if (!['PASS', 'CONCERNS'].includes(value.status)) return 'status must be PASS or CONCERNS';
   for (const field of ['mode_consistent', 'scope_consistent', 'verification_adequate', 'review_adequate', 'claims_bounded']) {
     if (typeof value[field] !== 'boolean') return `${field} must be boolean`;
   }
@@ -679,11 +796,11 @@ function validateCompletionVerdict(value, state) {
   }
   if (typeof value.summary !== 'string' || !value.summary.trim()) return 'summary is required';
   const allTrue = value.mode_consistent && value.scope_consistent && value.verification_adequate && value.review_adequate && value.claims_bounded;
-  if (value.status === 'ALLOW' && (!allTrue || value.missing_verification.length || value.material_findings.length)) {
-    return 'ALLOW requires every completion predicate true and no missing verification/material findings';
+  if (value.status === 'PASS' && (!allTrue || value.missing_verification.length || value.material_findings.length)) {
+    return 'PASS requires every completion predicate true and no missing verification/material findings';
   }
-  if (value.status === 'BLOCK' && allTrue && !value.missing_verification.length && !value.material_findings.length) {
-    return 'BLOCK requires at least one concrete failing predicate or finding';
+  if (value.status === 'CONCERNS' && allTrue && !value.missing_verification.length && !value.material_findings.length) {
+    return 'CONCERNS requires at least one concrete failing predicate or finding';
   }
 
   const byId = new Map((state?.verifications || []).map(v => [String(v.toolUseId || ''), v]));
@@ -694,18 +811,18 @@ function validateCompletionVerdict(value, state) {
     if (evidence.verificationRevision !== state.verificationRevision) return `evidence_tool_use_ids references stale verification ${id}`;
   }
 
-  if (value.status === 'ALLOW') {
+  if (value.status === 'PASS') {
     const current = currentSuccessfulVerifications(state);
-    const requiredKinds = new Set(state?.preflight?.required_verification_kinds || []);
-    for (const kind of requiredKinds) {
-      if (!current.some(v => v.kind === kind)) return `required verification kind ${kind} has no successful evidence at current verification revision`;
-      if (!value.evidence_tool_use_ids.some(id => byId.get(id)?.kind === kind)) return `ALLOW must cite current successful ${kind} evidence by tool_use_id`;
+    const recommendedKinds = new Set(state?.preflight?.recommended_verification_kinds || state?.preflight?.required_verification_kinds || []);
+    for (const kind of recommendedKinds) {
+      if (!current.some(v => v.kind === kind)) return `recommended verification kind ${kind} has no successful evidence at current verification revision`;
+      if (!value.evidence_tool_use_ids.some(id => byId.get(id)?.kind === kind)) return `PASS must cite current successful ${kind} evidence by tool_use_id`;
     }
     if (state.verificationRevision > 0 && !current.length) {
-      return 'ALLOW after behavior-affecting mutation requires at least one successful verification at the current verification revision';
+      return 'PASS after behavior-affecting mutation requires at least one successful verification at the current verification revision';
     }
     if (state.verificationRevision > 0 && !value.evidence_tool_use_ids.length) {
-      return 'ALLOW after behavior-affecting mutation must cite the successful verification evidence it relies on';
+      return 'PASS after behavior-affecting mutation must cite the successful verification evidence it relies on';
     }
   }
   return null;
@@ -752,10 +869,78 @@ function truncate(value, max = 7000) {
   return `${text.slice(0, half)}\n... [${text.length - max} chars omitted by policy recorder] ...\n${text.slice(-half)}`;
 }
 
+function boundedPush(list, value, max) {
+  list.push(value);
+  if (list.length > max) list.splice(0, list.length - max);
+}
+
+function advisoryRecord({ code, severity = 'warning', message, tool = null, toolUseId = '' }) {
+  return {
+    code,
+    severity,
+    message: truncate(message, 1600),
+    tool,
+    toolUseId,
+    recordedAt: new Date().toISOString(),
+  };
+}
+
+function compactMutation(record) {
+  return {
+    seq: record.seq,
+    reviewRevision: record.reviewRevision,
+    verificationRevision: record.verificationRevision,
+    tool: record.tool,
+    path: record.path,
+    targetKnown: record.targetKnown,
+    kind: record.kind,
+    command: record.command ? truncate(record.command, 300) : null,
+    toolUseId: record.toolUseId,
+  };
+}
+
+function compactVerification(record) {
+  return {
+    kind: record.kind,
+    command: truncate(record.command, 300),
+    success: record.success,
+    reviewRevision: record.reviewRevision,
+    verificationRevision: record.verificationRevision,
+    output: truncate(record.output, 800),
+    toolUseId: record.toolUseId,
+  };
+}
+
+function compactFailure(record) {
+  return {
+    tool: record.tool,
+    command: record.command ? truncate(record.command, 300) : null,
+    verificationKind: record.verificationKind,
+    reviewRevision: record.reviewRevision,
+    verificationRevision: record.verificationRevision,
+    error: truncate(record.error, 800),
+    interrupted: record.interrupted,
+    toolUseId: record.toolUseId,
+  };
+}
+
+function compactAdvisory(record) {
+  return {
+    code: record.code,
+    severity: record.severity,
+    message: truncate(record.message, 600),
+    tool: record.tool,
+    toolUseId: record.toolUseId,
+    contextEpoch: record.contextEpoch,
+    recordedAt: record.recordedAt,
+  };
+}
+
 function mutationClassification(toolName, toolInput) {
   if (WRITE_TOOLS.has(toolName)) {
     const filePath = toolPath(toolInput);
     return {
+      effect: 'MUTATION',
       persistent: true,
       reviewAffecting: true,
       verificationAffecting: !isDocumentationPath(filePath),
@@ -770,11 +955,21 @@ function mutationClassification(toolName, toolInput) {
 
   if (SHELL_TOOLS.has(toolName)) {
     const command = shellCommand(toolInput);
-    if (!shellPersistentMutation(command)) {
-      return { persistent: false, reviewAffecting: false, verificationAffecting: false, path: '', targetKnown: true, kind: 'observation' };
+    const effect = shellEffect(command);
+    if (effect !== 'MUTATION') {
+      return {
+        effect,
+        persistent: false,
+        reviewAffecting: false,
+        verificationAffecting: false,
+        path: '',
+        targetKnown: effect === 'READ_ONLY',
+        kind: effect === 'READ_ONLY' ? 'observation' : 'unknown-shell',
+      };
     }
     const metadataOnly = gitMetadataOnly(command);
     return {
+      effect,
       persistent: true,
       reviewAffecting: !metadataOnly,
       verificationAffecting: !metadataOnly,
@@ -787,7 +982,7 @@ function mutationClassification(toolName, toolInput) {
     };
   }
 
-  return { persistent: false, reviewAffecting: false, verificationAffecting: false, path: '', targetKnown: true, kind: 'none' };
+  return { effect: 'READ_ONLY', persistent: false, reviewAffecting: false, verificationAffecting: false, path: '', targetKnown: true, kind: 'none' };
 }
 
 function stateSnapshotForVerifier(state, input) {
@@ -801,15 +996,16 @@ function stateSnapshotForVerifier(state, input) {
     mutationCount: state.mutationCount,
     reviewRevision: state.reviewRevision,
     verificationRevision: state.verificationRevision,
-    mutations: state.mutations.slice(-80),
-    verifications: state.verifications.slice(-80),
-    failures: state.failures.slice(-40),
+    mutations: state.mutations.slice(-12).map(compactMutation),
+    verifications: state.verifications.slice(-12).map(compactVerification),
+    failures: state.failures.slice(-6).map(compactFailure),
+    advisories: state.advisories.slice(-6).map(compactAdvisory),
     preflight: state.preflight,
     completion: state.completion,
     verifierInstructions: {
-      trustedSource: 'This object is injected by the Engineering Doctrine hook. Treat ownerPrompt and recorded tool history as authoritative execution evidence for this verification pass.',
+      trustedSource: 'Treat ownerPrompt and recorded tool history as hook-recorded execution evidence.',
       parentTranscriptPath: String(input.transcript_path || ''),
-      snapshotBinding: 'The verdict is rejected if repository-affecting revisions change after this snapshot is issued.',
+      snapshotBinding: 'A verdict is stale if repository-affecting revisions change after this snapshot.',
     },
   };
   return JSON.stringify(snapshot, null, 2);
@@ -820,11 +1016,7 @@ function handlePrompt(input) {
     state.cwd = String(input.cwd || state.cwd || '');
     state.ownerPrompt = String(input.prompt || '');
   });
-  const state = loadState(input, true);
-  emit(
-    'UserPromptSubmit',
-    `Engineering Doctrine policy engine is active for prompt ${state.promptId}. Persistent content mutation requires an independent ${POLICY_AGENT} PRE_CHANGE verdict in addition to the named doctrine skills. After content mutation, final completion requires a fresh COMPLETION verdict bound to the latest review/verification revisions. A denied action must not be rerouted around the gate.`,
-  );
+  loadState(input, true);
 }
 
 function handleSessionContext(input) {
@@ -882,25 +1074,22 @@ function handleSkillExpansion(input, manifest) {
   });
 }
 
-function semanticGateReason(state) {
-  if (!state?.preflight) {
-    return `Engineering Doctrine semantic gate: persistent content mutation requires an independent PRE_CHANGE verdict. Invoke Agent with subagent_type "${POLICY_AGENT}" and prompt exactly "PRE_CHANGE". Do not summarize or reinterpret the owner request for the verifier; the SubagentStart hook injects the exact owner prompt and current policy state.`;
-  }
-  if (state.preflight.status !== 'ALLOW') {
-    const reasons = (state.preflight.blocking_reasons || []).join('; ') || state.preflight.summary || 'preflight blocked';
-    return `Engineering Doctrine semantic gate: PRE_CHANGE verdict is BLOCK. Resolve the blocking evidence and run ${POLICY_AGENT} with prompt "PRE_CHANGE" again. Blocking reasons: ${reasons}`;
-  }
-  return null;
+function preflightAdvisoryReason(state) {
+  const preflight = state?.preflight;
+  if (!preflight || preflight.status !== 'CONCERNS') return null;
+  const concerns = (preflight.concerns || []).join('; ') || preflight.summary || 'unresolved concerns';
+  return `PRE_CHANGE concerns: ${concerns}. Keep them visible and bound later claims to the evidence actually obtained.`;
 }
 
-function scopeGateReason(state, input, mutation) {
+function scopeAdvisoryReason(state, input, mutation) {
   const roots = state?.preflight?.scope_roots || [];
+  if (!roots.length || !mutation.persistent || !mutation.reviewAffecting) return null;
   if (mutation.targetKnown && mutation.path) {
     if (withinScope(String(input.cwd || state.cwd || ''), mutation.path, roots)) return null;
-    return `Engineering Doctrine scope gate: ${relativeProjectPath(String(input.cwd || state.cwd || ''), mutation.path)} is outside the PRE_CHANGE scope roots [${roots.join(', ')}] or crosses a symlink outside the repository. Run ${POLICY_AGENT} with prompt "PRE_CHANGE" again so the independent verifier can re-evaluate scope before mutation.`;
+    return `Scope drift: ${relativeProjectPath(String(input.cwd || state.cwd || ''), mutation.path)} is outside PRE_CHANGE scope [${roots.join(', ')}] or crosses a symlink outside the repository.`;
   }
   if (!mutation.targetKnown && !repoWideScope(roots)) {
-    return `Engineering Doctrine scope gate: this shell mutation does not expose a mechanically provable target path, while PRE_CHANGE scope is [${roots.join(', ')}]. Use a path-aware edit/write tool or obtain repository-wide "." scope before running an opaque shell mutation.`;
+    return `Scope unknown: shell mutation target cannot be proven against PRE_CHANGE scope [${roots.join(', ')}].`;
   }
   return null;
 }
@@ -908,43 +1097,97 @@ function scopeGateReason(state, input, mutation) {
 function handlePreTool(input, manifest) {
   const toolName = String(input.tool_name || 'unknown');
   const toolInput = input.tool_input || {};
+  const notices = [];
 
   if (isPolicyAgentType(input.agent_type) && SHELL_TOOLS.has(toolName)) {
     const command = shellCommand(toolInput);
-    if (verifierSafeShell(command)) return;
-    deny(`Engineering Doctrine verifier isolation: ${POLICY_AGENT} may use shell only for the documented read-only git forms (status, rev-parse, ls-files, diff with --no-ext-diff and --no-textconv). Use Read/Grep/Glob otherwise; mutation and arbitrary shell execution are forbidden.`);
-    return;
+    if (!verifierSafeShell(command)) {
+      const effect = shellEffect(command);
+      notices.push(advisoryRecord({
+        code: 'verifier-shell-effect',
+        severity: effect === 'MUTATION' ? 'high-risk' : 'warning',
+        tool: toolName,
+        toolUseId: String(input.tool_use_id || ''),
+        message: `${POLICY_AGENT} must remain read-only; shell effect classified as ${effect}.`,
+      }));
+    }
   }
 
   if (AGENT_TOOLS.has(toolName) && isPolicyAgentInput(toolInput)) {
     const requested = String(toolInput.prompt || '').trim();
     if (!['PRE_CHANGE', 'COMPLETION'].includes(requested)) {
-      deny(`Engineering Doctrine policy verifier invocation gate: ${POLICY_AGENT} accepts prompt exactly "PRE_CHANGE" or "COMPLETION". Do not add instructions, desired outcomes, summaries, or overrides; the hook injects the trusted owner prompt and state.`);
-      return;
+      notices.push(advisoryRecord({
+        code: 'verifier-invocation-shape',
+        severity: 'warning',
+        tool: toolName,
+        toolUseId: String(input.tool_use_id || ''),
+        message: `${POLICY_AGENT} expects PRE_CHANGE or COMPLETION; a nonstandard prompt may not produce a recordable verdict.`,
+      }));
     }
   }
 
   const mutation = mutationClassification(toolName, toolInput);
   const state = loadState(input, true);
-
   if (mutation.persistent && mutation.reviewAffecting) {
-    const semanticReason = semanticGateReason(state);
-    if (semanticReason) { deny(semanticReason); return; }
-    const scopeReason = scopeGateReason(state, input, mutation);
-    if (scopeReason) { deny(scopeReason); return; }
+    const preflightReason = preflightAdvisoryReason(state);
+    if (preflightReason) {
+      notices.push(advisoryRecord({
+        code: 'preflight-concerns',
+        severity: 'warning',
+        tool: toolName,
+        toolUseId: String(input.tool_use_id || ''),
+        message: preflightReason,
+      }));
+    }
+    const scopeReason = scopeAdvisoryReason(state, input, mutation);
+    if (scopeReason) {
+      notices.push(advisoryRecord({
+        code: 'scope-drift',
+        severity: 'warning',
+        tool: toolName,
+        toolUseId: String(input.tool_use_id || ''),
+        message: scopeReason,
+      }));
+    }
   }
 
-  const required = requirementsForTool(
+  const applicable = applicableSkillsForTool(
     toolName,
     toolInput,
     manifest,
     mutation.persistent && mutation.reviewAffecting ? state.preflight : null,
   );
-  if (!required.length) return;
+  if (applicable.length) {
+    const active = activeSkills(input, manifest);
+    const missing = missingSkills(applicable, active);
+    if (missing.length) {
+      notices.push(advisoryRecord({
+        code: 'skill-routing',
+        severity: 'info',
+        tool: toolName,
+        toolUseId: String(input.tool_use_id || ''),
+        message: skillAdvisory(toolName, missing),
+      }));
+    }
+  }
 
-  const active = activeSkills(input, manifest);
-  const missing = missingSkills(required, active);
-  if (missing.length) deny(gateReason(toolName, missing));
+  if (!notices.length) return;
+  const fresh = mutateState(input, current => {
+    const emitted = [];
+    for (const notice of notices) {
+      const duplicate = current.advisories.some(existing => (
+        existing.contextEpoch === current.contextEpoch
+        && existing.code === notice.code
+        && existing.message === notice.message
+      ));
+      if (duplicate) continue;
+      const recorded = { ...notice, contextEpoch: current.contextEpoch };
+      boundedPush(current.advisories, recorded, MAX_ADVISORIES);
+      emitted.push(recorded);
+    }
+    return emitted;
+  });
+  if (fresh.length) emit('PreToolUse', fresh.map(notice => `[${notice.severity}] ${notice.message}`).join('\n'));
 }
 
 function handlePostTool(input, manifest) {
@@ -970,7 +1213,7 @@ function handlePostTool(input, manifest) {
       if (mutation.reviewAffecting) state.reviewRevision += 1;
       if (mutation.verificationAffecting) state.verificationRevision += 1;
       if (mutation.reviewAffecting || mutation.verificationAffecting) state.completion = null;
-      state.mutations.push({
+      boundedPush(state.mutations, {
         seq: state.mutationCount,
         reviewRevision: state.reviewRevision,
         verificationRevision: state.verificationRevision,
@@ -980,14 +1223,14 @@ function handlePostTool(input, manifest) {
         kind: mutation.kind,
         command: SHELL_TOOLS.has(toolName) ? truncate(shellCommand(toolInput), 2000) : null,
         toolUseId: String(input.tool_use_id || ''),
-      });
+      }, 200);
     }
 
     if (SHELL_TOOLS.has(toolName)) {
       const command = shellCommand(toolInput);
       const kind = verificationKind(command);
       if (kind) {
-        state.verifications.push({
+        boundedPush(state.verifications, {
           kind,
           command: truncate(command, 3000),
           success: true,
@@ -995,7 +1238,7 @@ function handlePostTool(input, manifest) {
           verificationRevision: state.verificationRevision,
           output: truncate(input.tool_response, 7000),
           toolUseId: String(input.tool_use_id || ''),
-        });
+        }, 200);
       }
     }
   });
@@ -1008,7 +1251,7 @@ function handleFailure(input) {
   const kind = command ? verificationKind(command) : null;
 
   mutateState(input, state => {
-    state.failures.push({
+    boundedPush(state.failures, {
       tool: toolName,
       command: command ? truncate(command, 3000) : null,
       verificationKind: kind,
@@ -1017,9 +1260,9 @@ function handleFailure(input) {
       error: truncate(input.error || 'tool failure', 7000),
       interrupted: Boolean(input.is_interrupt),
       toolUseId: String(input.tool_use_id || ''),
-    });
+    }, 100);
     if (kind) {
-      state.verifications.push({
+      boundedPush(state.verifications, {
         kind,
         command: truncate(command, 3000),
         success: false,
@@ -1027,7 +1270,7 @@ function handleFailure(input) {
         verificationRevision: state.verificationRevision,
         output: truncate(input.error || 'tool failure', 7000),
         toolUseId: String(input.tool_use_id || ''),
-      });
+      }, 200);
     }
   });
   emit('PostToolUseFailure', FAILURE_CHECKPOINT(toolName));
@@ -1068,24 +1311,36 @@ function verifierRequestedPhase(input) {
   return null;
 }
 
+function recordVerifierProtocolAdvisory(input, message) {
+  mutateState(input, state => {
+    boundedPush(state.advisories, advisoryRecord({
+      code: 'verifier-protocol',
+      severity: 'warning',
+      tool: 'Agent',
+      message,
+    }), MAX_ADVISORIES);
+  });
+  process.stderr.write(`Engineering Doctrine advisory: ${message}\n`);
+}
+
 function policyVerifierStop(input, manifest) {
   const verdict = extractPolicyVerdict(input.last_assistant_message);
   if (!verdict) {
-    blockStop('Engineering Doctrine policy verifier protocol error: end with marker ENGINEERING_DOCTRINE_POLICY_V1 followed by exactly one valid JSON verdict object. Do not add a second verdict.');
+    recordVerifierProtocolAdvisory(input, 'Optional policy verifier did not return one ENGINEERING_DOCTRINE_POLICY_V1 verdict object; no verdict was recorded.');
     return;
   }
 
   const requestedPhase = verifierRequestedPhase(input);
   if (!requestedPhase) {
-    blockStop('Engineering Doctrine policy verifier protocol error: verifier transcript must contain exactly one recognized phase request: PRE_CHANGE or COMPLETION.');
+    recordVerifierProtocolAdvisory(input, 'Optional policy verifier transcript did not contain a recognized PRE_CHANGE or COMPLETION request; no verdict was recorded.');
     return;
   }
   if (verdict.phase !== requestedPhase) {
-    blockStop(`Engineering Doctrine policy verifier protocol error: verdict phase ${verdict.phase || '(missing)'} does not match requested phase ${requestedPhase}.`);
+    recordVerifierProtocolAdvisory(input, `Optional policy verifier returned phase ${verdict.phase || '(missing)'} for ${requestedPhase}; no verdict was recorded.`);
     return;
   }
   if (!verifierInspectedRepository(input)) {
-    blockStop('Engineering Doctrine policy verifier protocol error: verifier must inspect repository evidence with Read/Grep/Glob or an allowed read-only git command before issuing a verdict.');
+    recordVerifierProtocolAdvisory(input, 'Optional policy verifier did not inspect repository evidence before its verdict; no verdict was recorded.');
     return;
   }
 
@@ -1139,58 +1394,16 @@ function policyVerifierStop(input, manifest) {
   });
 
   if (protocolError) {
-    blockStop(`Engineering Doctrine policy verifier protocol error: ${protocolError}. Return a fresh ${requestedPhase} verdict using the required schema.`);
+    recordVerifierProtocolAdvisory(input, `Optional policy verifier verdict was not recorded: ${protocolError}.`);
   }
 }
 
-function completionStateReason(state) {
-  if (!state || state.reviewRevision <= 0) return null;
-  const verdict = state.completion;
-  if (!verdict) {
-    return `Engineering Doctrine semantic completion gate: content mutation reached review revision ${state.reviewRevision}, but no independent COMPLETION verdict exists. After running the relevant verification, invoke Agent with subagent_type "${POLICY_AGENT}" and prompt exactly "COMPLETION". The hook injects the owner prompt, mutation history, and recorded verification results.`;
-  }
-  if (verdict.verifiedReviewRevision !== state.reviewRevision || verdict.verifiedVerificationRevision !== state.verificationRevision) {
-    return `Engineering Doctrine semantic completion gate: the existing COMPLETION verdict is stale (verified review/verification ${verdict.verifiedReviewRevision}/${verdict.verifiedVerificationRevision}, current ${state.reviewRevision}/${state.verificationRevision}). Run ${POLICY_AGENT} with prompt "COMPLETION" again after the latest changes and checks.`;
-  }
-  if (verdict.status !== 'ALLOW') {
-    const gaps = [...(verdict.missing_verification || []), ...(verdict.material_findings || [])];
-    return `Engineering Doctrine semantic completion gate: independent verifier returned BLOCK. Resolve the concrete gaps, rerun affected verification, then run ${POLICY_AGENT} with prompt "COMPLETION" again. ${gaps.join('; ') || verdict.summary}`;
-  }
-  return null;
+function handleStop(input, manifest) {
+  if (isPolicyAgentType(input.agent_type)) policyVerifierStop(input, manifest);
 }
 
-function handleStop(input, manifest, eventName) {
-  if (isPolicyAgentType(input.agent_type)) {
-    policyVerifierStop(input, manifest);
-    return;
-  }
-
-  const state = loadState(input, false);
-  if (!state || state.mutationCount <= 0) return;
-
-  const active = activeSkills(input, manifest);
-  const required = state.reviewRevision > 0
-    ? ['verification-and-evidence', 'completion-and-review']
-    : ['completion-and-review'];
-  const missing = missingSkills(required, active);
-  if (missing.length) {
-    const skills = missing.map(name => `${PLUGIN_NAME}:${name}`).join(', ');
-    blockStop(`Engineering Doctrine completion gate: persistent mutation occurred in this ${eventName === 'SubagentStop' ? 'subagent ' : ''}work window, but ${skills} is missing in the current context epoch. Invoke every named skill and perform the required verification/review before finishing.`);
-    return;
-  }
-
-  if (eventName === 'SubagentStop') return;
-  const reason = completionStateReason(state);
-  if (reason) blockStop(reason);
-}
-
-function handleTaskCompleted(input) {
-  const state = loadState(input, false);
-  if (!state || state.reviewRevision <= 0) return;
-  const reason = completionStateReason(state);
-  if (!reason) return;
-  process.stderr.write(`${reason}\n`);
-  process.exitCode = 2;
+function handleTaskCompleted(_input) {
+  // Completion is intentionally non-blocking. Evidence remains available in policy state.
 }
 
 export const __test = {
@@ -1201,14 +1414,16 @@ export const __test = {
   gitMetadataOnly,
   verificationKind,
   shellKnownReadOnly,
+  shellEffect,
   shellPersistentMutation,
   mutationClassification,
-  requirementsForTool,
+  applicableSkillsForTool,
   relativeProjectPath,
   repoWideScope,
   validatePreflightVerdict,
   validateCompletionVerdict,
   extractPolicyVerdict,
+  stateSnapshotForVerifier,
 };
 
 function main() {
@@ -1220,8 +1435,8 @@ function main() {
     else if (mode === 'skill-expansion') handleSkillExpansion(readStdinJson(), loadManifest());
     else if (mode === 'pre-tool') handlePreTool(readStdinJson(), loadManifest());
     else if (mode === 'post-tool') handlePostTool(readStdinJson(), loadManifest());
-    else if (mode === 'stop') handleStop(readStdinJson(), loadManifest(), 'Stop');
-    else if (mode === 'subagent-stop') handleStop(readStdinJson(), loadManifest(), 'SubagentStop');
+    else if (mode === 'stop') handleStop(readStdinJson(), loadManifest());
+    else if (mode === 'subagent-stop') handleStop(readStdinJson(), loadManifest());
     else if (mode === 'task-completed') handleTaskCompleted(readStdinJson());
     else if (mode === 'failure') handleFailure(readStdinJson());
     else throw new Error(`unknown doctrine runtime mode: ${mode || '(missing)'}`);

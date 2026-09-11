@@ -13,21 +13,21 @@ const ROOT_RESERVED_PLUGIN_FILES = ['.mcp.json', '.lsp.json'];
 const MUTATION_FLOOR = { signal: 'condition:mutation', tools: ['Edit', 'Write', 'NotebookEdit'] };
 
 const POLICY_RUNTIME = {
-  schemaVersion: 1,
-  stateProtocol: 4,
+  schemaVersion: 2,
+  stateProtocol: 5,
   policyProtocol: 1,
   policyAgent: 'doctrine-policy-verifier',
   executionAgent: 'doctrine-engineer',
   canonicalMutationSkill: 'change-governance',
   verificationKinds: ['test', 'lint', 'typecheck', 'build', 'static-analysis'],
   scope: {
-    pathAwareWrites: 'checked against PRE_CHANGE literal prefixes and repository real-path containment',
-    opaqueShellMutation: 'requires repository-wide . scope',
+    pathAwareWrites: 'compared with optional PRE_CHANGE literal prefixes for drift evidence',
+    opaqueShellMutation: 'reported as scope-unknown when an optional PRE_CHANGE scope is narrower than repository-wide',
   },
   verification: {
     compoundShellCommands: 'never accepted as automatic verification evidence',
     mutationFlags: 'never accepted as automatic verification evidence',
-    completionBinding: 'reviewRevision and verificationRevision',
+    completionBinding: 'optional verifier evidence is bound to reviewRevision and verificationRevision',
   },
   state: {
     serialization: 'session-scoped lock plus atomic JSON replacement',
@@ -247,7 +247,7 @@ function runtimeHook(mode) {
 
 function buildHookConfig() {
   return {
-    description: 'Loads the governing kernel and enforces a two-layer policy engine: deterministic tool/state gates plus an independent read-only semantic verifier for change classification, scope, verification adequacy, and completion.',
+    description: 'Loads the governing kernel, routes applicable doctrine, records mutation and verification evidence, reports scope or policy observations, and supports optional independent semantic review.',
     hooks: {
       SessionStart: [{ matcher: 'startup|resume|clear|compact|fork', hooks: [runtimeHook('session-context')] }],
       SubagentStart: [{ matcher: '.*', hooks: [runtimeHook('subagent-context')] }],
@@ -256,8 +256,6 @@ function buildHookConfig() {
       PreToolUse: [{ matcher: 'Edit|Write|NotebookEdit|Bash|PowerShell|Agent', hooks: [runtimeHook('pre-tool')] }],
       PostToolUse: [{ matcher: 'Edit|Write|NotebookEdit|Bash|PowerShell|Skill|Agent', hooks: [runtimeHook('post-tool')] }],
       PostToolUseFailure: [{ matcher: '.*', hooks: [runtimeHook('failure')] }],
-      TaskCompleted: [{ hooks: [runtimeHook('task-completed')] }],
-      Stop: [{ hooks: [runtimeHook('stop')] }],
       SubagentStop: [{ matcher: '.*', hooks: [runtimeHook('subagent-stop')] }],
     },
   };
@@ -373,7 +371,7 @@ function compileDoctrine(src, runtimeSource) {
   };
 
   const manifest = {
-    schemaVersion: 10,
+    schemaVersion: 11,
     generated: true,
     packageRoot: 'plugin',
     canonicalRepositoryPath: 'doctrine/ENGINEERING_DOCTRINE.md',
@@ -417,12 +415,11 @@ function compileDoctrine(src, runtimeSource) {
       routeSource: 'taxonomy.skillCatalog',
       persistentRoutingState: false,
       classifies: false,
-      blocking: {
+      routing: {
         scope: MUTATION_FLOOR.signal,
         tools: MUTATION_FLOOR.tools,
-        requires: `engineering-doctrine:${parsed.routeBySignal.get(MUTATION_FLOOR.signal).skill}`,
+        recommends: `engineering-doctrine:${parsed.routeBySignal.get(MUTATION_FLOOR.signal).skill}`,
         evidence: 'session transcript',
-        opensWhenUnprovable: true,
       },
       reports: {
         source: 'session transcript',
@@ -433,7 +430,7 @@ function compileDoctrine(src, runtimeSource) {
       },
       checkpoints: [
         { event: 'UserPromptSubmit', purpose: 'doctrine state plus the initial moment judgment' },
-        { event: 'PreToolUse', purpose: 'mechanical mutation floor' },
+        { event: 'PreToolUse', purpose: 'skill routing, effect classification, and scope-drift observation' },
         { event: 'PostToolBatch', purpose: 'doctrine state after an acting batch, when it changed' },
         { event: 'PostToolUseFailure', purpose: 'failure-evidence applicability reassessment' },
       ],

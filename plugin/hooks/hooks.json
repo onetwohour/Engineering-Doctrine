@@ -1,5 +1,5 @@
 {
-  "description": "Loads the governing kernel and enforces a two-layer policy engine: deterministic tool/state gates plus an independent read-only semantic verifier for change classification, scope, verification adequacy, and completion.",
+  "description": "Loads the governing kernel, routes applicable doctrine, records mutation and verification evidence, reports scope or policy observations, and supports optional independent semantic review.",
   "hooks": {
     "SessionStart": [
       {
@@ -105,36 +105,6 @@
             "args": [
               "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
               "failure"
-            ],
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "task-completed"
-            ],
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": [
-              "${CLAUDE_PLUGIN_ROOT}/runtime/doctrine-runtime.mjs",
-              "stop"
             ],
             "timeout": 5
           }
