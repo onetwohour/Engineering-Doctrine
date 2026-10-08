@@ -44,6 +44,35 @@ Claude Code more consistently aims to:
 - Preserve user data and existing work
 - Review the diff and evidence again before completion
 
+## Efficient rule delivery and proof boundaries
+
+Engineering Doctrine has **one** canonical source (`doctrine/ENGINEERING_DOCTRINE.md`).
+The compiler now creates compact Skill entrypoints with links to complete generated
+rule files. Claude Code loads the applicable rule bodies when needed; the entrypoint
+alone is only an index, **not a substitute** for the binding rule text.
+
+The independent reviewer preloads only the `completion-and-review` index rather
+than all 14 Skills. The always-applicable governing kernel remains injected at
+session/subagent start. This changes delivery granularity, **not normative scope**.
+
+The policy runtime distinguishes command detection, observed command exit success,
+and actual contract verification. A `PostToolUse` message without an explicit
+exit code does not count as successful test evidence. Shell effects classified
+`UNKNOWN` conservatively invalidate previous review/verification revision claims.
+These decisions can over-invalidate legitimate checks but cannot silently preserve
+a potentially stale completion claim.
+
+```bash
+node scripts/report-delivery-size.mjs
+node scripts/build-doctrine.mjs --check
+node --test tests/*.test.mjs
+```
+
+Delivery-size reports count **bytes and characters**, not actual model tokens or
+semantic compliance. Always-tier instructions are still substantial; benchmark
+actual context usage and agent behavior before claiming a percentage saved.
+See [behavior evaluation cases](evaluations/behavior-cases.md).
+
 ## Full Doctrine
 
 The complete Engineering Doctrine is available at [doctrine/ENGINEERING_DOCTRINE.md](doctrine/ENGINEERING_DOCTRINE.md).

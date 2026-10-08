@@ -4,6 +4,16 @@
 
 **Engineering Doctrine** 是一个面向 Claude Code 的工程工作规范插件。它会引导 Claude Code 在修改前确认真正的原因、ownership、invariant、lifecycle 和 boundary，只修改必要范围，用证据验证实际行为，并在宣布完成前重新审查全部变更。
 
+## Rule loading and evidence boundaries
+
+The canonical doctrine remains in `doctrine/ENGINEERING_DOCTRINE.md`.
+Generated Skill entrypoints now index complete, on-demand rule files.
+The reviewer preloads only the completion/review index rather than all Skills.
+A command name appearing in text is not test execution evidence, and a missing
+exit status is not a passing test. Unknown shell effects invalidate prior
+verification confidence. Byte/character delivery budgets are not measured tokens.
+See [evaluation cases](evaluations/behavior-cases.md).
+
 ## 安装
 
 ```bash

@@ -20,5 +20,7 @@ jobs:
         run: node --check scripts/doctrine-runtime.mjs
       - name: Test policy runtime
         run: node --test tests/*.test.mjs
+      - name: Check delivery size budgets
+        run: node scripts/report-delivery-size.mjs --check
       - name: Check generated projections
         run: node scripts/build-doctrine.mjs --check

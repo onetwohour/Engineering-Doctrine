@@ -44,6 +44,33 @@ Claude Code가 다음을 더 일관되게 지향합니다.
 - 사용자 데이터와 기존 작업 보존
 - 완료 전 diff와 evidence 재검토
 
+## 규칙 지연 로딩과 검증 증거
+
+원본 정본은 여전히 `doctrine/ENGINEERING_DOCTRINE.md` 하나입니다. 컴파일러는
+각 Skill을 작은 **적용 조건·규칙 목록**으로 생성하고, 규칙의 전문은 개별 파일로
+분리합니다. Claude가 관련 규칙을 적용하려면 해당 원문 파일을 읽어야 하며,
+목록의 제목만으로 규칙을 준수했다고 주장해서는 안 됩니다.
+
+독립 Reviewer는 이전처럼 14개 Skill 전체를 사전 로드하지 않고
+`completion-and-review`의 목록 하나만 읽은 뒤, 실제 변경에 필요한 규칙을
+선택해서 읽도록 변경했습니다. 세션 시작에 주입되는 최상위 불변식은 유지됩니다.
+
+검증 결과도 구분합니다. `echo cargo test`처럼 문자열만 포함한 명령은 테스트
+실행 증거가 아니며, 종료 코드를 확인하지 못한 명령 역시 테스트 성공으로 기록하지
+않습니다. 변경 여부를 판별하지 못한 셸 명령은 기존 검증 기록을 유효한 것으로
+무조건 유지하지 않습니다. 따라서 검사 결과가 보수적으로 무효화되는 경우는 있을 수
+있지만, 불확실한 상태를 임의로 PASS로 만들지 않습니다.
+
+```bash
+node scripts/report-delivery-size.mjs
+node scripts/build-doctrine.mjs --check
+node --test tests/*.test.mjs
+```
+
+여기서 계산하는 것은 **정적 파일 크기와 예상 사전 로딩 범위**입니다.
+실제 모델의 입력 토큰 절감률이나 규칙 준수율을 측정한 것은 아닙니다.
+[행동 평가 시나리오](evaluations/behavior-cases.md)를 이용한 비교 검증이 필요합니다.
+
 ## 전체 규범
 
 전체 Engineering Doctrine은 [doctrine/ENGINEERING_DOCTRINE.md](doctrine/ENGINEERING_DOCTRINE.md)에 있습니다.
