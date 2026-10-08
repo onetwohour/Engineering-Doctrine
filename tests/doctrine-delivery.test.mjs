@@ -46,7 +46,7 @@ test('governing rules remain injected at session and subagent entry', () => {
   for (const p of [session, subagent]) {
     const body = p.hookSpecificOutput.additionalContext;
     assert.ok(body.includes('No hidden failures'));
-    assert.ok(body.includes('Normative contracts'), 'delegated normative authority must remain visible');
+    assert.ok(body.includes('A normative contract governs its assigned semantics'), 'delegated normative authority must remain visible');
     assert.ok(body.length > 1000);
   }
   assert.ok(manifest.governing.sessionRuntimeJsonChars < manifest.governing.maxHookJsonChars);
