@@ -395,13 +395,13 @@ Only rules tagged `authority: invariant` occupy the invariant tier. Forceful wor
 ### 2.2 Requirement authority and repository state are different
 <!-- doctrine-rule {"id":"principle.requirement-and-state-authority","authority":"binding","applies":{"kind":"always"}} -->
 
-Requirements and repository state are distinct.
+Requirements differ from observed repository state.
 
-For **requirements**, prefer: latest owner instruction → approved decisions and project-designated normative contracts within delegated semantic scope → durable task state → conversation summary → recollection. Normative contracts define project behavior, not agent permission.
+For **requirements**: latest owner instruction → approved decisions and delegated project normative contracts → durable task state → conversation summary → recollection. A normative contract governs its assigned semantics, not agent permissions.
 
-For **repository state**, prefer: working tree and diff → repository history → durable task state → conversation summary → recollection.
+For **repository state**: working tree/diff → Git history → durable task state → conversation summary → recollection.
 
-Repository state is evidence, not authority. A diff that violates a valid contract is a defect, not a new requirement.
+Repository state is evidence, not authority. A diff contradicting a valid contract is a defect, not a new requirement.
 
 ---
 
