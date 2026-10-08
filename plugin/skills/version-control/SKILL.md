@@ -7,16 +7,16 @@ description: "Running git: staging, committing, branching, stashing, resetting, 
 
 Protects task ownership and repository history by staging in-scope work, preserving unexplained changes, and reserving history-rewriting operations for explicit authority.
 
-Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.
+**Loading contract:** This file is a discovery index, not a reduced version of the rules.
+For every applicable cue below, read every listed file from `rules/` using this skill's
+installed base directory before acting or asserting compliance. Each file contains
+the complete authoritative rule body compiled from ENGINEERING_DOCTRINE.md.
+Do not infer requirements from these titles alone. Do not load irrelevant cues.
+When the necessary files are inaccessible, report the limitation instead of
+claiming to have applied an unread rule. Always-tier doctrine is separately injected.
 
-**Cue: Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history.** Canonical trigger: Git history, staging, commits, branches, stashes, resets, rebases, amendments, or force-pushes are touched.
+### Cue: Running git: staging, committing, branching, stashing, resetting, rebasing, amending, force-pushing, or otherwise touching history
 
-## 23. Version control
+Canonical trigger: Git history, staging, commits, branches, stashes, resets, rebases, amendments, or force-pushes are touched.
 
-Follow the repository's commit and branch conventions; if none exist, use concise conventional forms appropriate to the project. Do not commit unless the owner asks or the repository's established workflow requires it. Stage only changes that belong to the task.
-
-If the working tree contains unexplained changes: do not revert, tidy, or silently include them — treat the unexplained state as a re-entry condition and determine ownership before mutating it further.
-
-Never rewrite published history without explicit owner authority: no force-pushing published history, amending published commits, rebasing published work, dropping an unexplained stash, or resetting away unexplained work merely to obtain a clean state. Temporary task-state files stay out of commits unless explicitly requested.
-
----
+- [version-control.authority](rules/version-control.authority.md) — Version control

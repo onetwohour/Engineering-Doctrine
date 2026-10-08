@@ -18,6 +18,8 @@
   },
   "verification": {
     "compoundShellCommands": "never accepted as automatic verification evidence",
+    "observedExitStatus": "only explicit exit status zero is successful command evidence",
+    "unknownShellEffects": "conservatively invalidate previous review and verification revisions",
     "mutationFlags": "never accepted as automatic verification evidence",
     "completionBinding": "optional verifier evidence is bound to reviewRevision and verificationRevision"
   },

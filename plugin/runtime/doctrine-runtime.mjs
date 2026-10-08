@@ -540,16 +540,56 @@ function verificationMutationFlag(command) {
 }
 
 function verificationKind(command) {
-  const trimmed = command.trim();
+  const trimmed = String(command || '').trim();
   if (!trimmed || hasShellControlSyntax(trimmed) || verificationMutationFlag(trimmed)) return null;
-  const rules = [
-    ['test', /\bpytest\b|\bpython\s+-m\s+(?:pytest|unittest)\b|\b(?:jest|vitest|mocha|ava)\b|\b(?:npm|pnpm|yarn|bun)\s+(?:test|run\s+test)\b|\bcargo\s+test\b|\bgo\s+test\b|\b(?:mvn|mvnw)\b[^\n;&|]*\btest\b|\b(?:gradle|gradlew)\b[^\n;&|]*\btest\b|\bctest\b|\bmake\s+test\b/i],
-    ['lint', /\b(?:eslint|ruff|biome|shellcheck)\b|\b(?:npm|pnpm|yarn|bun)\s+run\s+lint\b|\bcargo\s+clippy\b/i],
-    ['typecheck', /\b(?:mypy|pyright|tsc)\b|\b(?:npm|pnpm|yarn|bun)\s+run\s+(?:typecheck|check)\b|\bcargo\s+check\b|\bgo\s+vet\b/i],
-    ['build', /\b(?:npm|pnpm|yarn|bun)\s+run\s+build\b|\bcargo\s+build\b|\bgo\s+build\b|\b(?:mvn|mvnw)\b[^\n;&|]*(?:verify|package)\b|\b(?:gradle|gradlew)\b[^\n;&|]*(?:check|build)\b|\bcmake\s+--build\b|\bmake\s+(?:check|verify|build)\b/i],
-    ['static-analysis', /\b(?:sanitizer|asan|ubsan|valgrind|fuzz|clippy|shellcheck)\b/i],
-  ];
-  for (const [kind, pattern] of rules) if (pattern.test(trimmed)) return kind;
+  const words = shellWords(trimmed);
+  if (!words?.length) return null;
+  let offset = 0;
+  // Only transparent environment assignments are accepted; never inspect embedded
+  // command text (echo, printf, python -c, shell -c, or arbitrary wrappers).
+  if (words[0] === 'env') {
+    offset = 1;
+    while (offset < words.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[offset])) offset++;
+  }
+  const exe = path.basename(words[offset] || '').toLowerCase().replace(/\\.exe$/, '');
+  const args = words.slice(offset + 1);
+  const sub = args[0] || '';
+  const named = (name) => sub === name || sub.startsWith(name + ':');
+  if (['pytest', 'jest', 'vitest', 'mocha', 'ava', 'ctest'].includes(exe)) return 'test';
+  if (['eslint', 'ruff', 'biome', 'shellcheck'].includes(exe)) return 'lint';
+  if (['mypy', 'pyright', 'tsc'].includes(exe)) return 'typecheck';
+  if (['valgrind', 'asan', 'ubsan'].includes(exe)) return 'static-analysis';
+  if (['python', 'python3', 'py'].includes(exe) && sub === '-m') {
+    const module = args[1];
+    if (['pytest', 'unittest'].includes(module)) return 'test';
+    if (['mypy', 'pyright'].includes(module)) return 'typecheck';
+    if (['ruff'].includes(module)) return 'lint';
+  }
+  if (exe === 'cargo') {
+    if (sub === 'test') return 'test';
+    if (sub === 'clippy') return 'lint';
+    if (sub === 'check') return 'typecheck';
+    if (sub === 'build') return 'build';
+  }
+  if (exe === 'go') {
+    if (sub === 'test') return 'test';
+    if (sub === 'vet') return 'typecheck';
+    if (sub === 'build') return 'build';
+  }
+  if (['npm', 'pnpm', 'yarn', 'bun'].includes(exe)) {
+    if (named('test') || (sub === 'run' && /^test(?::|$)/.test(args[1] || ''))) return 'test';
+    if (named('lint') || (sub === 'run' && /^lint(?::|$)/.test(args[1] || ''))) return 'lint';
+    if (named('check') || named('typecheck') ||
+        (sub === 'run' && /^(?:typecheck|check)(?::|$)/.test(args[1] || ''))) return 'typecheck';
+    if (named('build') || (sub === 'run' && /^build(?::|$)/.test(args[1] || ''))) return 'build';
+  }
+  if (['mvn', 'mvnw', 'gradle', 'gradlew', 'make', 'dotnet'].includes(exe)) {
+    const goals = args.filter(arg => !arg.startsWith('-'));
+    if (goals.includes('test') || goals.includes('check') && exe === 'gradlew') return 'test';
+    if (goals.includes('verify') || goals.includes('package') || goals.includes('build')) return 'build';
+    if (goals.includes('check')) return 'build';
+  }
+  if (exe === 'cmake' && sub === '--build') return 'build';
   return null;
 }
 
@@ -957,14 +997,17 @@ function mutationClassification(toolName, toolInput) {
     const command = shellCommand(toolInput);
     const effect = shellEffect(command);
     if (effect !== 'MUTATION') {
+      // UNKNOWN is not evidence that nothing changed. Conservatively invalidate
+      // prior review/verification until a real tree comparison resolves effects.
+      const uncertain = effect === 'UNKNOWN';
       return {
         effect,
-        persistent: false,
-        reviewAffecting: false,
-        verificationAffecting: false,
+        persistent: uncertain,
+        reviewAffecting: uncertain,
+        verificationAffecting: uncertain,
         path: '',
-        targetKnown: effect === 'READ_ONLY',
-        kind: effect === 'READ_ONLY' ? 'observation' : 'unknown-shell',
+        targetKnown: !uncertain,
+        kind: uncertain ? 'possible-shell-mutation' : 'observation',
       };
     }
     const metadataOnly = gitMetadataOnly(command);
@@ -1190,6 +1233,20 @@ function handlePreTool(input, manifest) {
   if (fresh.length) emit('PreToolUse', fresh.map(notice => `[${notice.severity}] ${notice.message}`).join('\n'));
 }
 
+function commandExitStatus(input) {
+  const response = input.tool_response;
+  if (response && typeof response === 'object' && !Array.isArray(response)) {
+    for (const field of ['exit_code', 'exitCode', 'code']) {
+      if (Number.isInteger(response[field])) return response[field];
+    }
+  }
+  if (typeof response === 'string') {
+    const match = response.match(/(?:^|\\n)\\s*(?:Exit code|exit_code):\\s*(-?\\d+)(?:\\s|$)/i);
+    if (match) return Number(match[1]);
+  }
+  return null;
+}
+
 function handlePostTool(input, manifest) {
   const toolName = String(input.tool_name || 'unknown');
   const toolInput = input.tool_input || {};
@@ -1233,7 +1290,8 @@ function handlePostTool(input, manifest) {
         boundedPush(state.verifications, {
           kind,
           command: truncate(command, 3000),
-          success: true,
+          success: commandExitStatus(input) === 0,
+          observedExitCode: commandExitStatus(input),
           reviewRevision: state.reviewRevision,
           verificationRevision: state.verificationRevision,
           output: truncate(input.tool_response, 7000),

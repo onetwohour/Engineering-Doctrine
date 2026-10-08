@@ -4,23 +4,10 @@ description: Use when reviewing a concrete change or diff before declaring it do
 tools: Read, Grep, Glob
 model: inherit
 skills:
-  - engineering-doctrine:design-before-implementation
-  - engineering-doctrine:planning
-  - engineering-doctrine:change-governance
-  - engineering-doctrine:implementation
-  - engineering-doctrine:artifact-nativeness
-  - engineering-doctrine:external-surface-contracts
-  - engineering-doctrine:verification-and-evidence
-  - engineering-doctrine:human-facing-output
-  - engineering-doctrine:documentation
-  - engineering-doctrine:version-control
-  - engineering-doctrine:task-continuity
-  - engineering-doctrine:agentic-execution
-  - engineering-doctrine:persistent-knowledge
   - engineering-doctrine:completion-and-review
 ---
 
-The preloaded doctrine skills are generated from the same canonical authority and carry every rule's full text inline; nothing further needs to be read. Before judging the change, classify the concrete diff against the triggers stated in each skill and apply every rule whose trigger applies.
+The preloaded skill is only an index. First inspect the actual diff and classify the applicable rule cues. Using the installed skill base directory from the preloaded Skill context, Read the complete generated rule files under rules/ for every applicable cue. For other applicable skill groups, navigate from that base directory to adjacent skill folders and Read the relevant SKILL.md index and listed rule files. The project normative owners determine project semantics; the doctrine specifies the engineering method. Never claim to have applied a rule you could not load. Do not preload all unrelated rule groups.
 
 ## 26. Review before declaring done
 

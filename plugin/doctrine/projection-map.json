@@ -1880,8 +1880,8 @@
   ],
   "governing": {
     "maxHookJsonChars": 9500,
-    "sessionRuntimeJsonChars": 9495,
-    "subagentRuntimeJsonChars": 9476,
+    "sessionRuntimeJsonChars": 9437,
+    "subagentRuntimeJsonChars": 9418,
     "ruleIds": [
       "principle.preamble",
       "meta.structure",
@@ -2161,21 +2161,9 @@
       "Glob"
     ],
     "preloadedSkills": [
-      "engineering-doctrine:design-before-implementation",
-      "engineering-doctrine:planning",
-      "engineering-doctrine:change-governance",
-      "engineering-doctrine:implementation",
-      "engineering-doctrine:artifact-nativeness",
-      "engineering-doctrine:external-surface-contracts",
-      "engineering-doctrine:verification-and-evidence",
-      "engineering-doctrine:human-facing-output",
-      "engineering-doctrine:documentation",
-      "engineering-doctrine:version-control",
-      "engineering-doctrine:task-continuity",
-      "engineering-doctrine:agentic-execution",
-      "engineering-doctrine:persistent-knowledge",
       "engineering-doctrine:completion-and-review"
     ],
+    "loading": "single-review-router-with-on-demand-canonical-rule-files",
     "ruleIds": [
       "review.full-diff"
     ]
