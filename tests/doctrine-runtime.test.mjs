@@ -335,14 +335,14 @@ test('optional verifier snapshot is compact and bounded', () => {
   assert.equal(parsed.failures.length, 6);
 });
 
-test('1.0.1 generated policy surface has no runtime permission gate', () => {
+test('generated policy surface has no runtime permission gate', () => {
   const manifest = JSON.parse(fs.readFileSync(new URL('../plugin/doctrine/projection-map.json', import.meta.url), 'utf8'));
   const policy = JSON.parse(fs.readFileSync(new URL('../plugin/doctrine/policy-runtime.json', import.meta.url), 'utf8'));
   const hooks = JSON.parse(fs.readFileSync(new URL('../plugin/hooks/hooks.json', import.meta.url), 'utf8'));
   const plugin = JSON.parse(fs.readFileSync(new URL('../plugin/.claude-plugin/plugin.json', import.meta.url), 'utf8'));
   const verifier = fs.readFileSync(new URL('../plugin/agents/doctrine-policy-verifier.md', import.meta.url), 'utf8');
 
-  assert.equal(plugin.version, '1.0.1');
+  assert.equal(plugin.version, '1.1.0');
   assert.equal(policy.enforcement, undefined);
   assert.ok(manifest.attention.routing);
   assert.equal(manifest.attention.blocking, undefined);

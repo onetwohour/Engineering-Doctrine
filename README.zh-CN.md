@@ -54,10 +54,6 @@ claude --plugin-dir ./Engineering-Doctrine/plugin
 
 `--plugin-dir` 仅对当前会话生效。
 
-## 参与贡献
-
-构建、生成和验证说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
 ## 许可证
 
 [Apache-2.0](LICENSE)

@@ -54,10 +54,6 @@ claude --plugin-dir ./Engineering-Doctrine/plugin
 
 `--plugin-dir` 옵션은 현재 세션에만 적용됩니다.
 
-## 기여 안내
-
-빌드·생성·검증 방법은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.
-
 ## 라이선스
 
 [Apache-2.0](LICENSE)

@@ -54,10 +54,6 @@ claude --plugin-dir ./Engineering-Doctrine/plugin
 
 The `--plugin-dir` option applies to the current session.
 
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for source layout, generation, and validation instructions.
-
 ## License
 
 [Apache-2.0](LICENSE)
