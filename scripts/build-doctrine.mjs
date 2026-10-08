@@ -332,10 +332,10 @@ function compileDoctrine(src, runtimeSource) {
           `Canonical trigger: ${app(parsed.tax, key).replace(/[.;]+$/, '')}.`, '');
       }
       const fileName = `rules/${rule.id}.md`;
-      files.set(`plugin/skills/${skill.name}/${fileName}`, renderRuleBody(rule, parsed.byId).trimEnd() + '\\n');
+      files.set(`plugin/skills/${skill.name}/${fileName}`, renderRuleBody(rule, parsed.byId).trimEnd() + '\n');
       body.push(`- [${rule.id}](${fileName}) — ${rule.title}`);
     }
-    files.set(`plugin/skills/${skill.name}/SKILL.md`, body.join('\\n') + '\\n');
+    files.set(`plugin/skills/${skill.name}/SKILL.md`, body.join('\n') + '\n');
   }
 
   const reviewRules = parsed.rules.filter(rule => signal(rule.applies) === 'stage:review');
