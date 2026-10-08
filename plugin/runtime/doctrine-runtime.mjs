@@ -565,6 +565,7 @@ function verificationKind(command) {
     if (['mypy', 'pyright'].includes(module)) return 'typecheck';
     if (['ruff'].includes(module)) return 'lint';
   }
+  if (exe === 'node' && sub === '--test') return 'test';
   if (exe === 'cargo') {
     if (sub === 'test') return 'test';
     if (sub === 'clippy') return 'lint';
@@ -944,6 +945,8 @@ function compactVerification(record) {
     kind: record.kind,
     command: truncate(record.command, 300),
     success: record.success,
+    observedExitCode: record.observedExitCode ?? null,
+    proofScope: record.proofScope ?? 'unconfirmed-command-result',
     reviewRevision: record.reviewRevision,
     verificationRevision: record.verificationRevision,
     output: truncate(record.output, 800),
@@ -1292,6 +1295,7 @@ function handlePostTool(input, manifest) {
           command: truncate(command, 3000),
           success: commandExitStatus(input) === 0,
           observedExitCode: commandExitStatus(input),
+          proofScope: 'command-exit-only; assertions and semantic coverage not assessed',
           reviewRevision: state.reviewRevision,
           verificationRevision: state.verificationRevision,
           output: truncate(input.tool_response, 7000),
