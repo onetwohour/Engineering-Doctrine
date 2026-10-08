@@ -1,6 +1,6 @@
 # Engineering Doctrine
 
-[English](README.md) · **简体中文** · [한국어](README.ko.md)
+[English](README.md) · [한국어](README.ko.md) · **简体中文** · [日本語](README.ja.md)
 
 **Engineering Doctrine** 是一个用于 Claude Code 的工程规范插件。它帮助 Claude 在修改软件前理解问题根因、职责和不变量，尊重现有架构，精确控制变更范围，并依据实际验证结果审查工作。
 

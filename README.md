@@ -1,6 +1,6 @@
 # Engineering Doctrine
 
-**English** · [简体中文](README.zh-CN.md) · [한국어](README.ko.md)
+**English** · [한국어](README.ko.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
 **Engineering Doctrine** is a Claude Code plugin for disciplined software engineering. It guides Claude through understanding the root cause, identifying ownership and invariants, making focused changes, checking the result, and reviewing the work before completion.
 

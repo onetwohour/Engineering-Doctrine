@@ -1,6 +1,6 @@
 # Engineering Doctrine
 
-[English](README.md) · [简体中文](README.zh-CN.md) · **한국어**
+[English](README.md) · **한국어** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md)
 
 **Engineering Doctrine**은 Claude Code가 소프트웨어를 수정하기 전에 문제의 원인과 책임을 파악하고, 기존 설계를 존중하며, 필요한 범위만 변경하고, 실제 검증 결과를 바탕으로 작업을 마무리하도록 돕는 엔지니어링 규범 플러그인입니다.
 
