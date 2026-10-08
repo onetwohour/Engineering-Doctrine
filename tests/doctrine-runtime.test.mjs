@@ -139,6 +139,7 @@ test('shell command text is not evidence that a verifier ran', () => {
   assert.equal(verificationKind('python -m unittest discover -s tests'), 'test');
   assert.equal(verificationKind('cargo clippy --all-targets'), 'lint');
   assert.equal(verificationKind('npm run test:unit'), 'test');
+  assert.equal(verificationKind('node --test tests/*.test.mjs'), 'test');
   assert.equal(verificationKind('cargo test && echo done'), null);
 });
 
@@ -161,6 +162,7 @@ test('PostToolUse records verifications only with an observed exit status', () =
   const checks = state.verifications.slice(-3);
   assert.deepEqual(checks.map(x => [x.success, x.observedExitCode]),
                    [[false, null], [false, 2], [true, 0]]);
+  assert.ok(checks.every(x => /command-exit-only/.test(x.proofScope)));
 });
 
 test('scope helper recognizes repository-wide scope', () => {
