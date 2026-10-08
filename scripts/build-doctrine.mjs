@@ -26,6 +26,8 @@ const POLICY_RUNTIME = {
   },
   verification: {
     compoundShellCommands: 'never accepted as automatic verification evidence',
+    observedExitStatus: 'only explicit exit status zero is successful command evidence',
+    unknownShellEffects: 'conservatively invalidate previous review and verification revisions',
     mutationFlags: 'never accepted as automatic verification evidence',
     completionBinding: 'optional verifier evidence is bound to reviewRevision and verificationRevision',
   },
@@ -312,7 +314,13 @@ function compileDoctrine(src, runtimeSource) {
       '',
       skill.summary,
       '',
-      'Cues are discovery shorthand; the rules below are the binding text, in doctrine order and grouped by the trigger that routes them.',
+      '**Loading contract:** This file is a discovery index, not a reduced version of the rules.',
+      'For every applicable cue below, read every listed file from `rules/` using this skill\'s',
+      'installed base directory before acting or asserting compliance. Each file contains',
+      'the complete authoritative rule body compiled from ENGINEERING_DOCTRINE.md.',
+      'Do not infer requirements from these titles alone. Do not load irrelevant cues.',
+      'When the necessary files are inaccessible, report the limitation instead of',
+      'claiming to have applied an unread rule. Always-tier doctrine is separately injected.',
       '',
     ];
     let current = null;
@@ -320,16 +328,20 @@ function compileDoctrine(src, runtimeSource) {
       const key = signal(rule.applies);
       if (key !== current) {
         current = key;
-        body.push(`**Cue: ${capitalize(cue(parsed.tax, key).replace(/[.;]+$/, ''))}.** Canonical trigger: ${app(parsed.tax, key).replace(/[.;]+$/, '')}.`, '');
+        body.push(`### Cue: ${capitalize(cue(parsed.tax, key).replace(/[.;]+$/, ''))}`, '',
+          `Canonical trigger: ${app(parsed.tax, key).replace(/[.;]+$/, '')}.`, '');
       }
-      body.push(renderRuleBody(rule, parsed.byId).trimEnd(), '');
+      const fileName = `rules/${rule.id}.md`;
+      files.set(`plugin/skills/${skill.name}/${fileName}`, renderRuleBody(rule, parsed.byId).trimEnd() + '\\n');
+      body.push(`- [${rule.id}](${fileName}) — ${rule.title}`);
     }
-    files.set(`plugin/skills/${skill.name}/SKILL.md`, body.join('\n'));
+    files.set(`plugin/skills/${skill.name}/SKILL.md`, body.join('\\n') + '\\n');
   }
 
   const reviewRules = parsed.rules.filter(rule => signal(rule.applies) === 'stage:review');
   if (!reviewRules.length) throw new Error('missing review rules');
-  const reviewerSkills = [...skills.keys()].map(name => `engineering-doctrine:${name}`);
+  // Preload only the review routing index, never the complete doctrine skill set.
+  const reviewerSkills = ['engineering-doctrine:completion-and-review'];
   files.set('plugin/agents/doctrine-reviewer.md', [
     '---',
     `name: doctrine-reviewer`,
@@ -340,7 +352,7 @@ function compileDoctrine(src, runtimeSource) {
     ...reviewerSkills.map(name => `  - ${name}`),
     '---',
     '',
-    "The preloaded doctrine skills are generated from the same canonical authority and carry every rule's full text inline; nothing further needs to be read. Before judging the change, classify the concrete diff against the triggers stated in each skill and apply every rule whose trigger applies.",
+    "The preloaded skill is only an index. First inspect the actual diff and classify the applicable rule cues. Using the installed skill base directory from the preloaded Skill context, Read the complete generated rule files under rules/ for every applicable cue. For other applicable skill groups, navigate from that base directory to adjacent skill folders and Read the relevant SKILL.md index and listed rule files. The project normative owners determine project semantics; the doctrine specifies the engineering method. Never claim to have applied a rule you could not load. Do not preload all unrelated rule groups.",
     '',
     renderRules(reviewRules, parsed.byId).trimEnd(),
     '',
@@ -406,6 +418,7 @@ function compileDoctrine(src, runtimeSource) {
       name: 'doctrine-reviewer',
       readOnlyTools: ['Read', 'Grep', 'Glob'],
       preloadedSkills: reviewerSkills,
+      loading: 'single-review-router-with-on-demand-canonical-rule-files',
       ruleIds: reviewRules.map(rule => rule.id),
     },
     attention: {
