@@ -2,17 +2,7 @@
 
 [English](README.md) · **简体中文** · [한국어](README.ko.md)
 
-**Engineering Doctrine** 是一个面向 Claude Code 的工程工作规范插件。它会引导 Claude Code 在修改前确认真正的原因、ownership、invariant、lifecycle 和 boundary，只修改必要范围，用证据验证实际行为，并在宣布完成前重新审查全部变更。
-
-## Rule loading and evidence boundaries
-
-The canonical doctrine remains in `doctrine/ENGINEERING_DOCTRINE.md`.
-Generated Skill entrypoints now index complete, on-demand rule files.
-The reviewer preloads only the completion/review index rather than all Skills.
-A command name appearing in text is not test execution evidence, and a missing
-exit status is not a passing test. Unknown shell effects invalidate prior
-verification confidence. Byte/character delivery budgets are not measured tokens.
-See [evaluation cases](evaluations/behavior-cases.md).
+**Engineering Doctrine** 是一个用于 Claude Code 的工程规范插件。它帮助 Claude 在修改软件前理解问题根因、职责和不变量，尊重现有架构，精确控制变更范围，并依据实际验证结果审查工作。
 
 ## 安装
 
@@ -21,53 +11,52 @@ claude plugin marketplace add onetwohour/claude-plugins
 claude plugin install engineering-doctrine@onetwohour
 ```
 
-安装后，启动一个新的 Claude Code 会话即可。
+安装后，重新启动 Claude Code 会话即可。
 
 ## 使用
 
-不需要额外命令。像平常一样直接提出任务即可。
+无需额外命令，像平常一样提出任务：
 
 ```text
 找出登录后会话偶发失效的原因并修复。
 ```
 
 ```text
-分析这个模块的 ownership 结构，并在必要时进行重构。
+分析这个模块的职责归属，并在必要时进行重构。
 ```
 
 ```text
 复现这个 bug，修复它，并添加回归测试。
 ```
 
-插件会根据任务类型和风险只应用必要的规则。小改动会保持轻量；涉及架构、状态、安全、数据、并发或 migration 的复杂工作会进行更深入的审查。
+插件根据任务选择相关规范。局部的小改动保持轻量；涉及架构、状态、安全、数据、并发或迁移的变更则进行更深入的审查。
 
-## 使用后有什么不同？
+## 核心原则
 
-Claude Code 会更一致地做到：
-
-- 修复真正的原因，而不是只处理症状
-- 在实现前确认 ownership、state 和 invariant
-- 避免不必要的 abstraction 和 architecture ceremony
-- 安全、精确地修改文件
-- 从模型和 failure space 推导测试
-- 不把未实际执行的工作声称为已经验证
-- 保留用户数据和已有工作
-- 完成前再次审查 diff 和 evidence
+- **先理解，再修改：** 确认根因、职责、状态与失败路径。
+- **尊重现有架构：** 优先复用已有职责归属，避免重复的事实来源。
+- **精准变更：** 将修改限制在有充分依据的范围内，保护现有工作和数据。
+- **验证实际行为：** 执行相关检查，考虑失败场景，区分事实与推测。
+- **完成前复核：** 检查最终差异和验证依据，准确报告已证实的结果。
 
 ## 完整规范
 
-完整的 Engineering Doctrine 位于 [doctrine/ENGINEERING_DOCTRINE.md](doctrine/ENGINEERING_DOCTRINE.md)。
+完整规则见 [Engineering Doctrine](doctrine/ENGINEERING_DOCTRINE.md)。
 
 ## 本地使用
 
-如果不安装，直接从克隆的仓库运行：
+也可以直接从克隆的仓库运行插件：
 
 ```bash
 git clone https://github.com/onetwohour/Engineering-Doctrine.git
 claude --plugin-dir ./Engineering-Doctrine/plugin
 ```
 
-`--plugin-dir` 只对当前会话生效，因此每次启动 Claude Code 都需要带上它。
+`--plugin-dir` 仅对当前会话生效。
+
+## 参与贡献
+
+构建、生成和验证说明见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
 ## 许可证
 

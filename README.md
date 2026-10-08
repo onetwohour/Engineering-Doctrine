@@ -2,7 +2,7 @@
 
 **English** · [简体中文](README.zh-CN.md) · [한국어](README.ko.md)
 
-**Engineering Doctrine** is a working-discipline plugin for Claude Code. Before making changes, it guides Claude Code to identify the actual cause, ownership, invariants, lifecycle, and boundaries; change only what is necessary; verify behavior with evidence; and review the full change again before declaring the work complete.
+**Engineering Doctrine** is a Claude Code plugin for disciplined software engineering. It guides Claude through understanding the root cause, identifying ownership and invariants, making focused changes, checking the result, and reviewing the work before completion.
 
 ## Installation
 
@@ -11,11 +11,11 @@ claude plugin marketplace add onetwohour/claude-plugins
 claude plugin install engineering-doctrine@onetwohour
 ```
 
-After installing, start a new Claude Code session.
+Start a new Claude Code session after installation.
 
 ## Usage
 
-No separate command is required. Ask for work as you normally would.
+No special command is required. Describe the task as usual:
 
 ```text
 Find the cause of the intermittent session loss after login and fix it.
@@ -29,55 +29,21 @@ Analyze the ownership structure of this module and refactor it if necessary.
 Reproduce this bug, fix it, and add a regression test.
 ```
 
-Only the rules needed for the type and risk of the task are applied. Small changes stay lightweight, while complex work involving architecture, state, security, data, concurrency, or migrations receives deeper review.
+The plugin selects guidance based on the task. A small, isolated edit stays lightweight; changes affecting architecture, state, security, data, concurrency, or migrations receive more thorough scrutiny.
 
-## What changes when you use it?
+## Engineering principles
 
-Claude Code more consistently aims to:
+- **Understand before changing.** Trace causes, responsibilities, state, and failure paths.
+- **Respect existing architecture.** Reuse the responsible abstraction rather than creating competing sources of truth.
+- **Change with precision.** Keep edits within the justified scope and protect existing work.
+- **Verify actual behavior.** Run relevant checks, consider failure cases, and distinguish observations from assumptions.
+- **Review before completion.** Inspect the final diff and communicate what was established by evidence.
 
-- Fix the actual cause rather than the symptom
-- Confirm ownership, state, and invariants before implementation
-- Avoid unnecessary abstractions and architecture ceremony
-- Make safe, precise file changes
-- Derive tests from the model and failure space
-- Never claim verification for work that was not actually run
-- Preserve user data and existing work
-- Review the diff and evidence again before completion
+## Full doctrine
 
-## Efficient rule delivery and proof boundaries
+Read the [Engineering Doctrine](doctrine/ENGINEERING_DOCTRINE.md) for the complete engineering principles.
 
-Engineering Doctrine has **one** canonical source (`doctrine/ENGINEERING_DOCTRINE.md`).
-The compiler now creates compact Skill entrypoints with links to complete generated
-rule files. Claude Code loads the applicable rule bodies when needed; the entrypoint
-alone is only an index, **not a substitute** for the binding rule text.
-
-The independent reviewer preloads only the `completion-and-review` index rather
-than all 14 Skills. The always-applicable governing kernel remains injected at
-session/subagent start. This changes delivery granularity, **not normative scope**.
-
-The policy runtime distinguishes command detection, observed command exit success,
-and actual contract verification. A `PostToolUse` message without an explicit
-exit code does not count as successful test evidence. Shell effects classified
-`UNKNOWN` conservatively invalidate previous review/verification revision claims.
-These decisions can over-invalidate legitimate checks but cannot silently preserve
-a potentially stale completion claim.
-
-```bash
-node scripts/report-delivery-size.mjs
-node scripts/build-doctrine.mjs --check
-node --test tests/*.test.mjs
-```
-
-Delivery-size reports count **bytes and characters**, not actual model tokens or
-semantic compliance. Always-tier instructions are still substantial; benchmark
-actual context usage and agent behavior before claiming a percentage saved.
-See [behavior evaluation cases](evaluations/behavior-cases.md).
-
-## Full Doctrine
-
-The complete Engineering Doctrine is available at [doctrine/ENGINEERING_DOCTRINE.md](doctrine/ENGINEERING_DOCTRINE.md).
-
-## Local Usage
+## Local use
 
 To run the plugin from a clone without installing it:
 
@@ -86,7 +52,11 @@ git clone https://github.com/onetwohour/Engineering-Doctrine.git
 claude --plugin-dir ./Engineering-Doctrine/plugin
 ```
 
-`--plugin-dir` applies to that session only, so pass it every time you start Claude Code.
+The `--plugin-dir` option applies to the current session.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for source layout, generation, and validation instructions.
 
 ## License
 
