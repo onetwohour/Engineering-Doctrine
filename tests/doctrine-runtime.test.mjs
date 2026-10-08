@@ -113,15 +113,54 @@ test('standalone verification is recognized but mutation-flavored verification i
   assert.equal(shellEffect('jest -u'), 'MUTATION');
 });
 
-test('unknown shell effects are not promoted to persistent mutation', () => {
-  const command = 'new-inspection-cli examine repo';
+test('unknown shell effects conservatively invalidate review and verification', () => {
+  const command = 'python -c "open(\'src/x\', \'w\').write(\'x\')"';
   assert.equal(shellKnownReadOnly(command), false);
   assert.equal(shellEffect(command), 'UNKNOWN');
-  assert.equal(shellPersistentMutation(command), false);
   const classified = mutationClassification('Bash', { command });
   assert.equal(classified.effect, 'UNKNOWN');
-  assert.equal(classified.persistent, false);
-  assert.equal(classified.kind, 'unknown-shell');
+  assert.equal(classified.persistent, true);
+  assert.equal(classified.reviewAffecting, true);
+  assert.equal(classified.verificationAffecting, true);
+  assert.equal(classified.kind, 'possible-shell-mutation');
+});
+
+test('shell command text is not evidence that a verifier ran', () => {
+  for (const command of [
+    'echo cargo test',
+    'printf "pytest --all"',
+    'python -c "print(\'pytest\')"',
+    'node -e "console.log(\'cargo test\')"',
+    'bash -c "cargo test"',
+    'true',
+  ]) assert.equal(verificationKind(command), null, command);
+
+  assert.equal(verificationKind('env RUST_LOG=info cargo test --workspace'), 'test');
+  assert.equal(verificationKind('python -m unittest discover -s tests'), 'test');
+  assert.equal(verificationKind('cargo clippy --all-targets'), 'lint');
+  assert.equal(verificationKind('npm run test:unit'), 'test');
+  assert.equal(verificationKind('cargo test && echo done'), null);
+});
+
+test('PostToolUse records verifications only with an observed exit status', () => {
+  const stateDir = tempStateDir();
+  const base = { session_id: 'verification-evidence', prompt_id: 'p', cwd: repoRoot,
+                 tool_name: 'Bash', tool_input: { command: 'cargo test' } };
+  for (const [id, response] of [
+    ['unknown', { stdout: 'ok' }],
+    ['failed', { exit_code: 2, stdout: 'fail' }],
+    ['passed', { exit_code: 0, stdout: 'ok' }],
+  ]) {
+    const result = runRuntime('post-tool', { ...base, tool_use_id: id, tool_response: response }, stateDir);
+    assert.equal(result.status, 0, result.stderr);
+  }
+  const pointer = path.join(stateDir, 'verification-evidence');
+  const files = fs.readdirSync(pointer).filter(name => name.endsWith('.json'));
+  assert.ok(files.length, 'session state must have been written');
+  const state = JSON.parse(fs.readFileSync(path.join(pointer, files[0]), 'utf8'));
+  const checks = state.verifications.slice(-3);
+  assert.deepEqual(checks.map(x => [x.success, x.observedExitCode]),
+                   [[false, null], [false, 2], [true, 0]]);
 });
 
 test('scope helper recognizes repository-wide scope', () => {
